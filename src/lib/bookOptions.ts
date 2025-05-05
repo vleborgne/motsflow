@@ -7,6 +7,7 @@ export const writingStyles = [
   { id: 'descriptive', label: { en: 'Descriptive', fr: 'Descriptif' } },
   { id: 'narrative', label: { en: 'Narrative', fr: 'Narratif' } },
   { id: 'technical', label: { en: 'Technical', fr: 'Technique' } },
+  { id: 'scifi_young', label: { en: 'Science Fiction (Young Audience)', fr: 'Science-fiction (jeune public)' } },
 ];
 
 export const bookTypes = [

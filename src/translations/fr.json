@@ -41,7 +41,8 @@
       "noBookType": "Veuillez sélectionner un type d'ouvrage",
       "generationFailed": "Échec de la génération du plan",
       "apiKey": "Veuillez vérifier que la clé API OpenAI est correctement configurée dans votre fichier .env.local"
-    }
+    },
+    "scifi_young": "Science-fiction (jeune public)"
   },
   "bookPlanDisplay": {
     "loading": "Chargement du plan...",
@@ -50,6 +51,7 @@
     "narrativeElement": "Élément narratif",
     "characters": "Personnages",
     "summary": "Résumé",
+    "story": "Histoire",
     "generateSubparts": "Générer les détails du chapitre",
     "regenerateSubparts": "Regénérer les détails du chapitre",
     "generating": "Génération en cours...",
@@ -79,7 +81,16 @@
     "editingScenes": "Modification en cours...",
     "editScenesSuccess": "Scènes modifiées avec succès !",
     "editScenesError": "Erreur lors de la modification des scènes.",
-    "editScenesPlaceholder": "Entrez une instruction pour modifier la liste des scènes (ex: Ajoute une scène de description du décor)"
+    "editScenesPlaceholder": "Entrez une instruction pour modifier la liste des scènes (ex: Ajoute une scène de description du décor)",
+    "redact": "Rédiger",
+    "redacting": "Rédaction en cours...",
+    "redactSuccess": "Les scènes ont été rédigées et sauvegardées ! Fichier :",
+    "redactError": "Erreur lors de la rédaction des scènes.",
+    "saveScenes": "Enregistrer les scènes",
+    "savingScenes": "Enregistrement...",
+    "saveScenesSuccess": "Scènes enregistrées avec succès !",
+    "saveScenesError": "Erreur lors de l'enregistrement des scènes.",
+    "error": "Erreur"
   },
   "chapterDevelopment": {
     "title": "Développement des chapitres",

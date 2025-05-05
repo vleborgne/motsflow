@@ -1,12 +1,25 @@
 import { NextResponse } from 'next/server';
 import { getBookPlan, saveBookPlan } from '@/lib/fileStorage';
-import callOpenAI from '../../../../lib/aiProvider';
 import path from 'path';
 import fs from 'fs';
-import { validateBookPlan } from '@/components/book-plan/types';
+import { promises as fsPromises } from 'fs';
+import callOpenAI from '@/lib/aiProvider';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    // Check for ?format=md in the query string
+    const url = new URL(request.url);
+    const format = url.searchParams.get('format');
+    if (format === 'md') {
+      // Return the raw markdown file
+      const filePath = path.join(process.cwd(), 'data', 'book-plan.md');
+      const content = await fsPromises.readFile(filePath, 'utf-8');
+      return new NextResponse(content, {
+        status: 200,
+        headers: { 'Content-Type': 'text/markdown; charset=utf-8' },
+      });
+    }
+    // Default: return JSON
     const plan = getBookPlan();
     return NextResponse.json(plan);
   } catch (error) {
@@ -26,7 +39,15 @@ export async function POST(request: Request) {
     console.log(`[${requestId}] Request body:`, JSON.stringify(body, null, 2));
     const { description, writingStyle, bookType, lang, prompt } = body;
     
-    if (!description || !writingStyle || !bookType) {
+    // Load the current plan and configuration
+    const currentPlan = getBookPlan();
+    const hasInitialPlan = currentPlan && Object.keys(currentPlan).length > 0;
+    const configPath = path.join(process.cwd(), 'data', 'book-config.json');
+    const configContent = fs.readFileSync(configPath, 'utf-8');
+    const currentConfig = JSON.parse(configContent);
+
+    // Only require description, writingStyle, bookType if no plan exists
+    if (!hasInitialPlan && (!description || !writingStyle || !bookType)) {
       console.error(`[${requestId}] Missing required fields:`, { description, writingStyle, bookType });
       return NextResponse.json(
         { error: 'Missing required fields' },
@@ -34,148 +55,30 @@ export async function POST(request: Request) {
       );
     }
 
-    // Retrieve the current plan and configuration
-    const currentPlan = getBookPlan();
-    const configPath = path.join(process.cwd(), 'data', 'book-config.json');
-    const configContent = fs.readFileSync(configPath, 'utf-8');
-    const currentConfig = JSON.parse(configContent);
+    // Adapt the redacteur prompt based on the presence of an initial plan
+    const structureInstructions = `Règles de structure :
+- Chaque chapitre doit comporter un résumé ET une liste des scènes.
+- Les parties doivent être des titres de niveau 1 (#).
+- Les chapitres doivent être des titres de niveau 2 (##).
+- Les résumés et les listes de scènes doivent être des titres de niveau 3 (###).
+- La liste des scènes doit être sous forme de liste à puces sous le titre 'Scènes'.`;
 
-    console.log(`[${requestId}] Calling OpenAI with parameters:`, {
-      writingStyle,
-      bookType,
-      lang
-    });
+    const redacteurPrompt = hasInitialPlan
+      ? `Voici le plan actuel du livre :\n${JSON.stringify(currentPlan, null, 2)}\n\nVoici la configuration actuelle :\n${JSON.stringify(currentConfig, null, 2)}\n\nDemande de l'utilisateur :\n${prompt}\n\n${structureInstructions}\n\nTa tâche :\n1. Garde la structure générale du plan (parties, chapitres)\n2. Modifie uniquement les éléments demandés par l'utilisateur\n3. Assure la cohérence narrative entre les différentes parties\n4. Préserve les personnages existants et leurs arcs narratifs\n5. Respecte le style d'écriture et le type de livre\n6. Préserve les numéros de chapitres existants.`
+      : `Aucun plan initial n'existe. Génère un plan de livre complet à partir des informations suivantes :\nDescription : ${description}\nStyle d'écriture : ${writingStyle}\nType de livre : ${bookType}\nConfiguration :\n${JSON.stringify(currentConfig, null, 2)}\n\nDemande de l'utilisateur :\n${prompt}\n\n${structureInstructions}\n\nTa tâche :\n1. Crée la structure complète du plan (parties, chapitres)\n2. Assure la cohérence narrative\n3. Propose des personnages et leurs arcs narratifs\n4. Respecte le style d'écriture et le type de livre.`;
 
-    const systemPrompt = `You are an assistant specialized in editing existing book outlines. You must modify the existing outline according to the user's prompt, while respecting the specified writing style and book type.
-IMPORTANT:
-- Your response must be ONLY a valid JSON object, with no extra text before or after.
-- Do not add comments, explanations, or extra text.
-- The response must start with { and end with }.
-- JSON keys must be in English (title, genre, parts, chapters, etc.).
-- ALL content (titles, descriptions, stories) must be in French.
-- Each chapter MUST have a "chapter_number" field corresponding to its number in the part (starting at 1).
-- The expected JSON format is as follows (types in brackets, do not include brackets in the response):
-{
-  "title": [string],
-  "genre": [string],
-  "parts": [
-    {
-      "title": [string],
-      "chapters": [
-        {
-          "chapter_number": [number],
-          "title": [string],
-          "narrative_goal": [string],
-          "story": [string],
-          "summary": [string],
-          "characters": [array of string],
-          "narrative_element": [string],
-          "subparts"?: [
-            {
-              "id": [string],
-              "title": [string],
-              "content": [string],
-              "suspense": [string]
-            }
-          ],
-          "has_subparts"?: [boolean]
-        }
-      ]
-    }
-  ],
-  "characters": [
-    {
-      "id": [string],
-      "name": [string],
-      "description": [string]
-    }
-  ]
-}
-`;
+    // Direct two-step AI call (redacteur, then transformateur)
+    const redacteurSystemPrompt = `Tu es un assistant spécialisé dans la création et la modification de plans de livres. Génère ou modifie le plan ci-dessous selon la demande de l'utilisateur, en respectant le style d'écriture et le type de livre. N'ajoute aucun texte explicatif, ne modifie pas la structure générale du plan, et conserve la cohérence narrative.`;
+    const plan = await callOpenAI(
+      redacteurSystemPrompt,
+      redacteurPrompt,
+      { responseFormat: { type: 'text' }, agentId: process.env.MISTRAL_AGENT_ID_REDACTEUR }
+    );
 
-    const userPrompt = `Modify the following book outline according to the user's request.
-
-Current outline:
-${JSON.stringify(currentPlan, null, 2)}
-
-Current configuration:
-${JSON.stringify(currentConfig, null, 2)}
-
-User request:
-${prompt}
-
-Your task is to:
-1. Keep the general structure of the outline (parts, chapters)
-2. Modify the elements requested by the user
-3. Ensure narrative coherence between the different parts
-4. Maintain existing characters and their narrative arcs
-5. Respect the specified writing style and book type
-6. Ensure each chapter has a "chapter_number" field corresponding to its number in the part (starting at 1)
-
-The expected JSON structure is the same as the current outline, with the addition of the "chapter_number" field for each chapter.`;
-
-    console.log(`[${requestId}] Making OpenAI API call...`);
-    const response = await callOpenAI(systemPrompt, userPrompt, {
-      responseFormat: { type: "json_object" }
-    });
-    console.log(`[${requestId}] OpenAI API call completed`);
-
-    let plan = response;
-    if (!plan || !validateBookPlan(plan)) {
-      console.warn(`[${requestId}] OpenAI response invalid, retrying with explicit format reminder...`);
-      const correctionPrompt = `ATTENTION : Le format de la réponse précédente n'est pas conforme au format JSON strictement attendu. Voici le format exact à respecter (types entre crochets, ne pas inclure les crochets dans la réponse) :
-{
-  "title": [string],
-  "genre": [string],
-  "parts": [
-    {
-      "title": [string],
-      "chapters": [
-        {
-          "chapter_number": [number],
-          "title": [string],
-          "narrative_goal": [string],
-          "story": [string],
-          "summary": [string],
-          "characters": [array of string],
-          "narrative_element": [string],
-          "subparts"?: [
-            {
-              "id": [string],
-              "title": [string],
-              "content": [string],
-              "suspense": [string]
-            }
-          ],
-          "has_subparts"?: [boolean]
-        }
-      ]
-    }
-  ],
-  "characters": [
-    {
-      "id": [string],
-      "name": [string],
-      "description": [string]
-    }
-  ]
-}
-Corrige la réponse précédente pour qu'elle corresponde STRICTEMENT à ce format.`;
-      plan = await callOpenAI(systemPrompt, correctionPrompt, {
-        responseFormat: { type: "json_object" }
-      });
-      if (!plan || !validateBookPlan(plan)) {
-        console.error(`[${requestId}] OpenAI failed to return a valid BookPlan format after retry.`);
-        return NextResponse.json(
-          { error: 'Failed to generate plan in the expected format' },
-          { status: 500 }
-        );
-      }
-    }
-
+    // Save the plan directly without validation
     console.log(`[${requestId}] Saving generated plan...`);
     saveBookPlan(plan);
-    console.log(`[${requestId}] Plan saved successfully`);
+    console.log(`[${requestId}] Plan saved successfully to data/book-plan.md`);
 
     return NextResponse.json({ plan });
   } catch (error) {
@@ -261,7 +164,7 @@ export async function PUT(request: Request) {
     
     console.log(`[${requestId}] Saving updated plan...`);
     saveBookPlan(updatedPlan);
-    console.log(`[${requestId}] Plan updated successfully`);
+    console.log(`[${requestId}] Plan updated successfully to data/book-plan.md`);
     
     return NextResponse.json(updatedPlan);
   } catch (error) {
@@ -275,7 +178,7 @@ export async function PUT(request: Request) {
 
 export async function DELETE() {
   try {
-    const filePath = path.join(process.cwd(), 'data', 'book-plan.json');
+    const filePath = path.join(process.cwd(), 'data', 'book-plan.md');
     if (fs.existsSync(filePath)) {
       fs.unlinkSync(filePath);
     }
@@ -289,4 +192,4 @@ export async function DELETE() {
       { status: 500 }
     );
   }
-} 
+}

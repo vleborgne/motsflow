@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-const PLAN_FILE = path.join(process.cwd(), 'data', 'book-plan.json');
+const PLAN_FILE = path.join(process.cwd(), 'data', 'book-plan.md');
 
 // Ensure the data directory exists
 const dataDir = path.dirname(PLAN_FILE);
@@ -10,7 +10,8 @@ if (!fs.existsSync(dataDir)) {
 }
 
 export function saveBookPlan(plan: any): void {
-  fs.writeFileSync(PLAN_FILE, JSON.stringify(plan, null, 2));
+  console.log(`[saveBookPlan] Writing to: ${PLAN_FILE}`);
+  fs.writeFileSync(PLAN_FILE, typeof plan === 'string' ? plan : JSON.stringify(plan, null, 2), 'utf-8');
 }
 
 export function getBookPlan(): any | null {
@@ -18,7 +19,11 @@ export function getBookPlan(): any | null {
     return null;
   }
   const content = fs.readFileSync(PLAN_FILE, 'utf-8');
-  return JSON.parse(content);
+  try {
+    return JSON.parse(content);
+  } catch (e) {
+    return content;
+  }
 }
 
 export function hasBookPlan(): boolean {

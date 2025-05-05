@@ -41,7 +41,8 @@
       "noBookType": "Please select a book type",
       "generationFailed": "Failed to generate plan",
       "apiKey": "Please check that your OpenAI API key is correctly configured in your .env.local file"
-    }
+    },
+    "scifi_young": "Science Fiction (Young Audience)"
   },
   "bookPlanDisplay": {
     "loading": "Loading plan...",
@@ -50,6 +51,7 @@
     "narrativeElement": "Narrative element",
     "characters": "Characters",
     "summary": "Summary",
+    "story": "Story",
     "modifyPlanPrompt": "Enter your instructions to modify the plan...",
     "modifyPlan": "Modify plan",
     "modifyingPlan": "Modifying plan...",
@@ -71,7 +73,16 @@
     "editingScenes": "Editing...",
     "editScenesSuccess": "Scenes edited successfully!",
     "editScenesError": "Error while editing scenes.",
-    "editScenesPlaceholder": "Enter an instruction to edit the list of scenes (e.g. Add a scene describing the setting)"
+    "editScenesPlaceholder": "Enter an instruction to edit the list of scenes (e.g. Add a scene describing the setting)",
+    "redact": "Write scenes",
+    "redacting": "Writing...",
+    "redactSuccess": "Scenes have been written and saved! File:",
+    "redactError": "Error while writing scenes.",
+    "saveScenes": "Save scenes",
+    "savingScenes": "Saving...",
+    "saveScenesSuccess": "Scenes saved successfully!",
+    "saveScenesError": "Error while saving scenes.",
+    "error": "Error"
   },
   "chapterDevelopment": {
     "title": "Chapter development",

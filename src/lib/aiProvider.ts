@@ -4,6 +4,10 @@ import OpenAI from 'openai';
 const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL || 'http://localhost:11434';
 const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'mistral:latest';
 
+// Mistral configuration
+const MISTRAL_BASE_URL = process.env.MISTRAL_BASE_URL || 'https://api.mistral.ai';
+const MISTRAL_API_KEY = process.env.MISTRAL_API_KEY;
+
 // Interface for AI providers
 interface AIProvider {
   generateCompletion(systemPrompt: string, userPrompt: string, config: AIConfig): Promise<any>;
@@ -14,6 +18,7 @@ interface AIConfig {
   temperature?: number;
   maxTokens?: number;
   responseFormat?: { type: "json_object" | "text" };
+  agentId?: string; // Optional agentId for Mistral agents
 }
 
 // OpenAI Implementation
@@ -37,7 +42,7 @@ class OpenAIProvider implements AIProvider {
     const {
       model = "gpt-4-turbo-preview",
       temperature = 0.7,
-      maxTokens = 2000,
+      maxTokens = 4000,
       responseFormat = { type: "json_object" as const }
     } = config;
 
@@ -70,16 +75,26 @@ class OpenAIProvider implements AIProvider {
       const response = completion.choices[0]?.message?.content;
       console.log('Raw response:', response);
       console.log('OpenAI response length:', response ? response.length : 0);
-      console.log('OpenAI response (first 200 chars):', response ? response.slice(0, 200) : '[empty]');
 
       if (!response) {
         console.error('OpenAI returned empty response');
         return null;
       }
 
+      // NEW: Return raw response if text is expected
+      if (responseFormat?.type === 'text') {
+        return response;
+      }
+
       return this.processResponse(response);
     } catch (error) {
       console.error('Error in OpenAI API call:', error);
+      console.error('OpenAI call failed with:', {
+        systemPrompt,
+        userPrompt,
+        config,
+        error
+      });
       throw error;
     }
   }
@@ -225,13 +240,148 @@ class OllamaProvider implements AIProvider {
   }
 }
 
+// Mistral Implementation
+class MistralProvider implements AIProvider {
+  private baseUrl: string;
+  private apiKey: string;
+
+  constructor() {
+    this.baseUrl = MISTRAL_BASE_URL;
+    this.apiKey = MISTRAL_API_KEY || '';
+    if (!this.apiKey) {
+      console.error('MISTRAL_API_KEY is missing from environment variables');
+      throw new Error('MISTRAL_API_KEY is missing from environment variables');
+    }
+  }
+
+  async generateCompletion(systemPrompt: string, userPrompt: string, config: AIConfig = {}) {
+    const {
+      model = 'mistral-large-latest',
+      maxTokens = 4000,
+      responseFormat = { type: 'json_object' as const },
+      agentId
+    } = config;
+
+    let requestBody: any;
+    let endpoint: string;
+    if (agentId) {
+      // Use the agents endpoint
+      endpoint = '/v1/agents/completions';
+      requestBody = {
+        agent_id: agentId,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
+        ],
+        max_tokens: maxTokens,
+        // Add response_format if present
+        ...(responseFormat ? { response_format: responseFormat } : {})
+      };
+    } else {
+      // Use the chat endpoint
+      endpoint = '/v1/chat/completions';
+      requestBody = {
+        model,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
+        ],
+        temperature,
+        max_tokens: maxTokens,
+        // Add response_format if present
+        ...(responseFormat ? { response_format: responseFormat } : {})
+      };
+    }
+
+    try {
+      const response = await fetch(`${this.baseUrl}${endpoint}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.apiKey}`,
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Mistral API Error Details:', {
+          status: response.status,
+          statusText: response.statusText,
+          errorBody: errorText
+        });
+        throw new Error(`Mistral API error: ${response.status} ${response.statusText}\n${errorText}`);
+      }
+
+      const data = await response.json();
+      const content = data.choices?.[0]?.message?.content;
+      if (!content) {
+        console.error('Mistral returned empty response');
+        return null;
+      }
+      // If text is expected, return as is
+      if (responseFormat?.type === 'text') {
+        return content;
+      }
+      return handleAIResponse(content, responseFormat?.type);
+    } catch (error) {
+      console.error('Mistral API Error:', error);
+      throw error;
+    }
+  }
+
+  private processResponse(response: string | null, responseType: 'json_object' | 'text' = 'json_object') {
+    if (!response) {
+      throw new Error('No response from Mistral');
+    }
+    if (responseType === 'text') {
+      return response;
+    }
+    try {
+      // Try direct JSON parse
+      try {
+        return JSON.parse(response);
+      } catch (e) {
+        // Try to extract the first JSON array in the string
+        const firstBracket = response.indexOf('[');
+        const lastBracket = response.lastIndexOf(']');
+        if (firstBracket !== -1 && lastBracket !== -1 && lastBracket > firstBracket) {
+          const jsonArrayStr = response.slice(firstBracket, lastBracket + 1);
+          try {
+            return JSON.parse(jsonArrayStr);
+          } catch (e2) {
+            // Try to parse again if it's a stringified string
+            try {
+              return JSON.parse(JSON.parse(jsonArrayStr));
+            } catch (e3) {
+              console.error('Error parsing Mistral response after extracting array:', e2);
+              console.error('Raw response that failed to parse:', response);
+              throw new Error('Failed to parse Mistral response as JSON (even after cleaning)');
+            }
+          }
+        } else {
+          console.error('Error parsing Mistral response:', e);
+          console.error('Raw response that failed to parse:', response);
+          throw new Error('Failed to parse Mistral response as JSON');
+        }
+      }
+    } catch (error) {
+      console.error('Error cleaning/parsing Mistral response:', error);
+      console.error('Raw response that failed to parse:', response);
+      throw new Error('Failed to parse Mistral response as JSON (even after cleaning)');
+    }
+  }
+}
+
 // Factory to create the appropriate provider
-export function createAIProvider(provider: 'openai' | 'ollama' = 'openai'): AIProvider {
+export function createAIProvider(provider: 'openai' | 'ollama' | 'mistral' = 'openai'): AIProvider {
   switch (provider) {
     case 'openai':
       return new OpenAIProvider();
     case 'ollama':
       return new OllamaProvider();
+    case 'mistral':
+      return new MistralProvider();
     default:
       throw new Error(`Unknown AI provider: ${provider}`);
   }
@@ -243,9 +393,67 @@ export default async function callOpenAI(
   userPrompt: string,
   config: AIConfig = {}
 ) {
-  const provider = createAIProvider(process.env.AI_PROVIDER as 'openai' | 'ollama' || 'openai');
+  const provider = createAIProvider(process.env.AI_PROVIDER as 'openai' | 'ollama' | 'mistral' || 'openai');
   return provider.generateCompletion(systemPrompt, userPrompt, config);
 }
 
 export type { AIProvider, AIConfig };
-export { OpenAIProvider, OllamaProvider };
+export { OpenAIProvider, OllamaProvider, MistralProvider };
+
+function parseAIResponse(response: string | null): any {
+  console.log('[parseAIResponse] Raw response:', response);
+  if (!response) return null;
+
+  // Clean markdown code block delimiters
+  let cleaned = response.trim();
+  if (cleaned.startsWith('```json')) {
+    cleaned = cleaned.replace(/^```json\s*/, '');
+  }
+  if (cleaned.startsWith('```')) {
+    cleaned = cleaned.replace(/^```\s*/, '');
+  }
+  if (cleaned.endsWith('```')) {
+    cleaned = cleaned.replace(/```\s*$/, '');
+  }
+  cleaned = cleaned.trim();
+  console.log('[parseAIResponse] Cleaned response:', cleaned);
+
+  // Try to parse the whole object
+  try {
+    const parsed = JSON.parse(cleaned);
+    console.log('[parseAIResponse] Successfully parsed as JSON:', parsed);
+    return parsed;
+  } catch (e1) {
+    console.warn('[parseAIResponse] Failed to parse as JSON, trying to extract array. Error:', e1);
+    const firstBracket = cleaned.indexOf('[');
+    const lastBracket = cleaned.lastIndexOf(']');
+    if (firstBracket !== -1 && lastBracket !== -1 && lastBracket > firstBracket) {
+      const jsonArrayStr = cleaned.slice(firstBracket, lastBracket + 1);
+      console.log('[parseAIResponse] Extracted array string:', jsonArrayStr);
+      try {
+        const parsedArray = JSON.parse(jsonArrayStr);
+        console.log('[parseAIResponse] Successfully parsed extracted array:', parsedArray);
+        return parsedArray;
+      } catch (e2) {
+        console.warn('[parseAIResponse] Failed to parse extracted array, trying double JSON.parse. Error:', e2);
+        try {
+          const doubleParsed = JSON.parse(JSON.parse(jsonArrayStr));
+          console.log('[parseAIResponse] Successfully double-parsed array:', doubleParsed);
+          return doubleParsed;
+        } catch (e3) {
+          console.error('[parseAIResponse] Failed to parse response as JSON (even after cleaning). Error:', e3);
+          throw new Error('Failed to parse response as JSON (even after cleaning)');
+        }
+      }
+    } else {
+      console.error('[parseAIResponse] Failed to parse response as JSON, no array found.');
+      throw new Error('Failed to parse response as JSON');
+    }
+  }
+}
+
+function handleAIResponse(response: string | null, responseType: 'json_object' | 'text' = 'json_object') {
+  if (!response) return null;
+  if (responseType === 'text') return response;
+  return parseAIResponse(response);
+}
