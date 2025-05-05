@@ -1,0 +1,84 @@
+{
+  "steps": {
+    "step1": {
+      "title": "Step 1",
+      "description": "Book configuration"
+    },
+    "step2": {
+      "title": "Step 2",
+      "description": "Detailed plan"
+    },
+    "step3": {
+      "title": "Step 3",
+      "description": "Writing"
+    },
+    "step4": {
+      "title": "Step 4",
+      "description": "Proofreading"
+    }
+  },
+  "navigation": {
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "bookDescription": {
+    "label": "Book description",
+    "placeholder": "Enter a detailed description of your book here...",
+    "generatePlan": "Generate plan"
+  },
+  "bookDescriptionInput": {
+    "writingStyle": "Writing style",
+    "selectWritingStyle": "Select a writing style",
+    "bookType": "Book type",
+    "selectBookType": "Select a book type",
+    "description": "Book description",
+    "placeholder": "Enter a detailed description of your book...",
+    "generatePlan": "Generate Plan",
+    "generating": "Generating...",
+    "errors": {
+      "empty": "Please enter a description",
+      "noWritingStyle": "Please select a writing style",
+      "noBookType": "Please select a book type",
+      "generationFailed": "Failed to generate plan",
+      "apiKey": "Please check that your OpenAI API key is correctly configured in your .env.local file"
+    }
+  },
+  "bookPlanDisplay": {
+    "loading": "Loading plan...",
+    "noPlan": "No plan has been generated yet.",
+    "chapter": "Chapter",
+    "narrativeElement": "Narrative element",
+    "characters": "Characters",
+    "summary": "Summary",
+    "modifyPlanPrompt": "Enter your instructions to modify the plan...",
+    "modifyPlan": "Modify plan",
+    "modifyingPlan": "Modifying plan...",
+    "viewScenes": "View scenes",
+    "generateScenes": "Generate chapter scenes",
+    "generatingScenes": "Generating...",
+    "scenesGeneratedSuccess": "Scenes generated successfully!",
+    "scenesGeneratedError": "Error while generating scenes.",
+    "noScenes": "No scenes found.",
+    "scenes": "Scenes",
+    "chapterScenesTitle": "Scenes for chapter {num}",
+    "scenesList": "Scenes list",
+    "scene": "Scene",
+    "regenerateAllScenes": "Regenerate all scenes",
+    "regeneratingAllScenes": "Regenerating all scenes...",
+    "regenerateAllScenesSuccess": "All scenes have been regenerated successfully!",
+    "regenerateAllScenesError": "Error while regenerating all scenes.",
+    "editScenes": "Edit",
+    "editingScenes": "Editing...",
+    "editScenesSuccess": "Scenes edited successfully!",
+    "editScenesError": "Error while editing scenes.",
+    "editScenesPlaceholder": "Enter an instruction to edit the list of scenes (e.g. Add a scene describing the setting)"
+  },
+  "chapterDevelopment": {
+    "title": "Chapter development",
+    "chapterTitle": "Chapter title",
+    "chapterContent": "Chapter content",
+    "addChapter": "Add chapter",
+    "updateChapter": "Update chapter",
+    "cancel": "Cancel"
+  }
+} 

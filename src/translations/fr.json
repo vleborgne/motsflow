@@ -1,0 +1,92 @@
+{
+  "steps": {
+    "step1": {
+      "title": "Étape 1",
+      "description": "Configuration du livre"
+    },
+    "step2": {
+      "title": "Étape 2",
+      "description": "Plan détaillé"
+    },
+    "step3": {
+      "title": "Étape 3",
+      "description": "Rédaction"
+    },
+    "step4": {
+      "title": "Étape 4",
+      "description": "Relecture"
+    }
+  },
+  "navigation": {
+    "previous": "Précédent",
+    "next": "Suivant"
+  },
+  "bookDescription": {
+    "label": "Description du livre",
+    "placeholder": "Entrez une description détaillée de votre livre ici...",
+    "generatePlan": "Générer le plan"
+  },
+  "bookDescriptionInput": {
+    "writingStyle": "Style d'écriture",
+    "selectWritingStyle": "Sélectionnez un style d'écriture",
+    "bookType": "Type d'ouvrage",
+    "selectBookType": "Sélectionnez un type d'ouvrage",
+    "description": "Description du livre",
+    "placeholder": "Entrez une description détaillée de votre livre...",
+    "generatePlan": "Générer le Plan",
+    "generating": "Génération en cours...",
+    "errors": {
+      "empty": "Veuillez entrer une description",
+      "noWritingStyle": "Veuillez sélectionner un style d'écriture",
+      "noBookType": "Veuillez sélectionner un type d'ouvrage",
+      "generationFailed": "Échec de la génération du plan",
+      "apiKey": "Veuillez vérifier que la clé API OpenAI est correctement configurée dans votre fichier .env.local"
+    }
+  },
+  "bookPlanDisplay": {
+    "loading": "Chargement du plan...",
+    "noPlan": "Aucun plan n'a été généré pour le moment.",
+    "chapter": "Chapitre",
+    "narrativeElement": "Élément narratif",
+    "characters": "Personnages",
+    "summary": "Résumé",
+    "generateSubparts": "Générer les détails du chapitre",
+    "regenerateSubparts": "Regénérer les détails du chapitre",
+    "generating": "Génération en cours...",
+    "subpartsGenerated": "Détails du chapitre générés",
+    "subparts": "Détails du chapitre",
+    "suspense": "Suspense",
+    "generateAllSubparts": "Générer tous les détails des chapitres",
+    "generatingAll": "Génération de tous les détails des chapitres en cours...",
+    "modifyPlanPrompt": "Entrez vos instructions pour modifier le plan...",
+    "modifyPlan": "Modifier le plan",
+    "modifyingPlan": "Modification du plan en cours...",
+    "viewScenes": "Voir les scènes",
+    "generateScenes": "Générer les scènes du chapitre",
+    "generatingScenes": "Génération en cours...",
+    "scenesGeneratedSuccess": "Scènes générées avec succès !",
+    "scenesGeneratedError": "Erreur lors de la génération des scènes.",
+    "noScenes": "Aucune scène trouvée.",
+    "scenes": "Scènes",
+    "chapterScenesTitle": "Scènes du chapitre {num}",
+    "scenesList": "Liste des scènes",
+    "scene": "Scène",
+    "regenerateAllScenes": "Regénérer toutes les scènes",
+    "regeneratingAllScenes": "Régénération de toutes les scènes en cours...",
+    "regenerateAllScenesSuccess": "Toutes les scènes ont été régénérées avec succès !",
+    "regenerateAllScenesError": "Erreur lors de la régénération de toutes les scènes.",
+    "editScenes": "Modifier",
+    "editingScenes": "Modification en cours...",
+    "editScenesSuccess": "Scènes modifiées avec succès !",
+    "editScenesError": "Erreur lors de la modification des scènes.",
+    "editScenesPlaceholder": "Entrez une instruction pour modifier la liste des scènes (ex: Ajoute une scène de description du décor)"
+  },
+  "chapterDevelopment": {
+    "title": "Développement des chapitres",
+    "chapterTitle": "Titre du chapitre",
+    "chapterContent": "Contenu du chapitre",
+    "addChapter": "Ajouter un chapitre",
+    "updateChapter": "Mettre à jour le chapitre",
+    "cancel": "Annuler"
+  }
+} 
