@@ -9,12 +9,12 @@ if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
 }
 
-export function saveBookPlan(plan: any): void {
+export function saveBookPlan(plan: string | object): void {
   console.log(`[saveBookPlan] Writing to: ${PLAN_FILE}`);
   fs.writeFileSync(PLAN_FILE, typeof plan === 'string' ? plan : JSON.stringify(plan, null, 2), 'utf-8');
 }
 
-export function getBookPlan(): any | null {
+export function getBookPlan(): string | object | null {
   if (!fs.existsSync(PLAN_FILE)) {
     return null;
   }
@@ -30,16 +30,17 @@ export function hasBookPlan(): boolean {
   return fs.existsSync(PLAN_FILE);
 }
 
-export function updateBookPlan(updates: Partial<any>): void {
+export function updateBookPlan(updates: Partial<object>): void {
   const currentPlan = getBookPlan();
   if (!currentPlan) {
     throw new Error('No plan exists to update');
   }
-  
+  if (typeof currentPlan !== 'object' || currentPlan === null) {
+    throw new Error('Current plan is not an object and cannot be updated');
+  }
   const updatedPlan = {
     ...currentPlan,
     ...updates,
   };
-  
   saveBookPlan(updatedPlan);
 } 

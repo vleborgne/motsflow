@@ -3,7 +3,7 @@ import { getBookPlan, saveBookPlan } from '@/lib/fileStorage';
 import path from 'path';
 import fs from 'fs';
 import { promises as fsPromises } from 'fs';
-import callOpenAI from '@/lib/aiProvider';
+import { planWriterAgent, reviewerAgent } from '@/lib/agents';
 
 export async function GET(request: Request) {
   try {
@@ -22,7 +22,7 @@ export async function GET(request: Request) {
     // Default: return JSON
     const plan = getBookPlan();
     return NextResponse.json(plan);
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to get book plan' },
       { status: 500 }
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     console.log(`[${requestId}] Request body:`, JSON.stringify(body, null, 2));
-    const { description, writingStyle, bookType, lang, prompt } = body;
+    const { description, writingStyle, bookType, prompt } = body;
     
     // Load the current plan and configuration
     const currentPlan = getBookPlan();
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Adapt the redacteur prompt based on the presence of an initial plan
+    // Structure instructions for the plan
     const structureInstructions = `Règles de structure :
 - Chaque chapitre doit comporter un résumé ET une liste des scènes.
 - Les parties doivent être des titres de niveau 1 (#).
@@ -63,24 +63,35 @@ export async function POST(request: Request) {
 - Les résumés et les listes de scènes doivent être des titres de niveau 3 (###).
 - La liste des scènes doit être sous forme de liste à puces sous le titre 'Scènes'.`;
 
-    const redacteurPrompt = hasInitialPlan
+    // 1. Génération du plan initial par le planWriterAgent
+    const planWriterPrompt = hasInitialPlan
       ? `Voici le plan actuel du livre :\n${JSON.stringify(currentPlan, null, 2)}\n\nVoici la configuration actuelle :\n${JSON.stringify(currentConfig, null, 2)}\n\nDemande de l'utilisateur :\n${prompt}\n\n${structureInstructions}\n\nTa tâche :\n1. Garde la structure générale du plan (parties, chapitres)\n2. Modifie uniquement les éléments demandés par l'utilisateur\n3. Assure la cohérence narrative entre les différentes parties\n4. Préserve les personnages existants et leurs arcs narratifs\n5. Respecte le style d'écriture et le type de livre\n6. Préserve les numéros de chapitres existants.`
       : `Aucun plan initial n'existe. Génère un plan de livre complet à partir des informations suivantes :\nDescription : ${description}\nStyle d'écriture : ${writingStyle}\nType de livre : ${bookType}\nConfiguration :\n${JSON.stringify(currentConfig, null, 2)}\n\nDemande de l'utilisateur :\n${prompt}\n\n${structureInstructions}\n\nTa tâche :\n1. Crée la structure complète du plan (parties, chapitres)\n2. Assure la cohérence narrative\n3. Propose des personnages et leurs arcs narratifs\n4. Respecte le style d'écriture et le type de livre.`;
 
-    // Direct two-step AI call (redacteur, then transformateur)
-    const redacteurSystemPrompt = `Tu es un assistant spécialisé dans la création et la modification de plans de livres. Génère ou modifie le plan ci-dessous selon la demande de l'utilisateur, en respectant le style d'écriture et le type de livre. N'ajoute aucun texte explicatif, ne modifie pas la structure générale du plan, et conserve la cohérence narrative.`;
-    const plan = await callOpenAI(
-      redacteurSystemPrompt,
-      redacteurPrompt,
-      { responseFormat: { type: 'text' }, agentId: process.env.MISTRAL_AGENT_ID_REDACTEUR }
-    );
+    const initialPlan = await planWriterAgent.submitQuery([planWriterPrompt]);
 
-    // Save the plan directly without validation
-    console.log(`[${requestId}] Saving generated plan...`);
-    saveBookPlan(plan);
-    console.log(`[${requestId}] Plan saved successfully to data/book-plan.md`);
+    // 2. Relecture du plan par le reviewerAgent
+    const reviewPrompt = [
+      `Voici le plan du livre à relire :\n${initialPlan}\n\nPour chaque personnage et chaque lieu, vérifie qu'une description complète et détaillée est présente. Il est impératif que tous les personnages et tous les lieux soient bien décrits. Vérifie la cohérence du plan et détecte les répétitions. Génère une liste de suggestions ou corrections à appliquer, sous forme de liste structurée, sans réécrire le plan. TU NE DOIS FOURNIR QUE LA LISTE DES SUGGESTIONS ET CORRECTIONS ET PAS D'AUTRE TEXTE. TU NE DOIS PAS FOURNIR DE TEXTE EXPLICATIF.`
+    ];
+    const suggestions = await reviewerAgent.submitQuery(reviewPrompt);
 
-    return NextResponse.json({ plan });
+    // 3. Réécriture du plan par le planWriterAgent en prenant en compte les suggestions
+    const rewritePrompt = [
+      `Voici le plan initial :\n${initialPlan}\n\nVoici la liste des suggestions/corrections à appliquer :\n${typeof suggestions === 'string' ? suggestions : JSON.stringify(suggestions, null, 2)}\n\nMerci de réécrire le plan en appliquant uniquement ces suggestions, sans rien changer d'autre.`
+    ];
+    const improvedPlan = await planWriterAgent.submitQuery(rewritePrompt);
+
+    // Save the improved plan
+    console.log(`[${requestId}] Saving improved plan...`);
+    saveBookPlan(improvedPlan);
+    console.log(`[${requestId}] Improved plan saved successfully to data/book-plan.md`);
+
+    return NextResponse.json({
+      initialPlan,
+      suggestions,
+      improvedPlan
+    });
   } catch (error) {
     console.error(`[${requestId}] Error in plan generation:`, error);
     return NextResponse.json(
@@ -97,76 +108,36 @@ export async function PUT(request: Request) {
   try {
     const updates = await request.json();
     console.log(`[${requestId}] Update request body:`, JSON.stringify(updates, null, 2));
-    
-    const currentPlan = getBookPlan();
-    if (!currentPlan) {
-      console.error(`[${requestId}] No plan exists to update`);
-      return NextResponse.json(
-        { error: 'No plan exists to update' },
-        { status: 404 }
-      );
-    }
 
-    // Check that required fields are present in the updates
-    const requiredFields = ['title', 'genre', 'characters', 'parts'];
-    const missingFields = requiredFields.filter(field => !updates[field]);
-    
-    if (missingFields.length > 0) {
-      console.error(`[${requestId}] Missing required fields:`, missingFields);
-      return NextResponse.json(
-        { 
-          error: 'Missing required fields',
-          missingFields
-        },
-        { status: 400 }
-      );
-    }
-
-    // Check the structure of parts and chapters
-    if (!Array.isArray(updates.parts)) {
-      console.error(`[${requestId}] Parts must be an array`);
-      return NextResponse.json(
-        { error: 'Parts must be an array' },
-        { status: 400 }
-      );
-    }
-
-    for (const part of updates.parts) {
-      if (!part.title || !Array.isArray(part.chapters)) {
-        console.error(`[${requestId}] Invalid part structure:`, part);
+    // 1. User-driven plan modification
+    if (updates && typeof updates.modificationPrompt === 'string') {
+      console.log(`[${requestId}] Received modificationPrompt:`, updates.modificationPrompt);
+      const currentPlan = getBookPlan();
+      console.log(`[${requestId}] Current plan:`, typeof currentPlan === 'string' ? currentPlan : JSON.stringify(currentPlan, null, 2));
+      if (!currentPlan) {
+        console.error(`[${requestId}] No plan exists to update`);
         return NextResponse.json(
-          { error: 'Invalid part structure' },
-          { status: 400 }
+          { error: 'No plan exists to update' },
+          { status: 404 }
         );
       }
-
-      for (const chapter of part.chapters) {
-        const requiredChapterFields = ['title', 'narrative_goal', 'summary', 'characters', 'narrative_elements'];
-        const missingChapterFields = requiredChapterFields.filter(field => !chapter[field]);
-        
-        if (missingChapterFields.length > 0) {
-          console.error(`[${requestId}] Missing required chapter fields:`, missingChapterFields);
-          return NextResponse.json(
-            { 
-              error: 'Missing required chapter fields',
-              missingFields: missingChapterFields
-            },
-            { status: 400 }
-          );
-        }
-      }
+      // Compose the prompt for the agent
+      const agentPrompt = [
+        `Voici le plan actuel :\n${typeof currentPlan === 'string' ? currentPlan : JSON.stringify(currentPlan, null, 2)}\n\nVoici la demande de modification de l'utilisateur :\n${updates.modificationPrompt}\n\nMerci de modifier le plan pour qu'il corresponde à la demande, sans changer la structure générale ni le style.`
+      ];
+      console.log(`[${requestId}] Agent prompt:`, agentPrompt[0]);
+      const modifiedPlan = await planWriterAgent.submitQuery(agentPrompt);
+      console.log(`[${requestId}] Modified plan:`, modifiedPlan);
+      // Save and return
+      const filePath = path.join(process.cwd(), 'data', 'book-plan.md');
+      await fsPromises.writeFile(filePath, modifiedPlan, 'utf-8');
+      console.log(`[${requestId}] Modified plan saved to book-plan.md`);
+      return NextResponse.json({ plan: modifiedPlan });
     }
-    
-    const updatedPlan = {
-      ...currentPlan,
-      ...updates,
-    };
-    
-    console.log(`[${requestId}] Saving updated plan...`);
-    saveBookPlan(updatedPlan);
-    console.log(`[${requestId}] Plan updated successfully to data/book-plan.md`);
-    
-    return NextResponse.json(updatedPlan);
+
+    // No more structure checks, always handle as Markdown
+    console.warn(`[${requestId}] Invalid request: missing modificationPrompt`);
+    return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
   } catch (error) {
     console.error(`[${requestId}] Error updating plan:`, error);
     return NextResponse.json(

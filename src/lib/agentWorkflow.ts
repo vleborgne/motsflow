@@ -26,14 +26,14 @@ export async function agentWorkflow<T = any>(config: AgentWorkflowConfig): Promi
   console.log('[agentWorkflow] Calling redacteur agent with systemPrompt:', config.redacteur.systemPrompt);
   console.log('[agentWorkflow] Redacteur userPrompt:', config.redacteur.userPrompt);
   const redacteurResponse = await callOpenAI(
-    config.redacteur.systemPrompt,
-    config.redacteur.userPrompt,
+    [config.redacteur.systemPrompt],
+    [config.redacteur.userPrompt],
     {
       ...(config.callConfig || {}),
       responseFormat: { type: config.redacteur.responseFormat || 'text' },
       agentId: config.redacteur.agentId || process.env.MISTRAL_AGENT_ID_REDACTEUR
     }
-  );
+  ) as string;
   console.log('[agentWorkflow] Redacteur response:', redacteurResponse);
 
   // 2. Transformateur
@@ -44,8 +44,8 @@ export async function agentWorkflow<T = any>(config: AgentWorkflowConfig): Promi
   console.log('[agentWorkflow] Transformateur userPrompt:', transformateurUserPrompt);
 
   const formatted = await callOpenAI(
-    config.transformateur.systemPrompt,
-    transformateurUserPrompt,
+    [config.transformateur.systemPrompt],
+    [transformateurUserPrompt],
     {
       ...(config.callConfig || {}),
       responseFormat: { type: config.transformateur.responseFormat || 'json_object' },

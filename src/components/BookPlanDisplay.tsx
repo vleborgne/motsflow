@@ -1,30 +1,104 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { t } from '@/lib/i18n';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import ReactMarkdown from 'react-markdown';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
 import ChatSidebar from './ChatSidebar';
+import dynamic from 'next/dynamic';
+import 'easymde/dist/easymde.min.css';
+import React, { MutableRefObject } from 'react';
 
 interface BookPlanDisplayProps {
   locale: 'en' | 'fr';
 }
 
+// Dynamically import SimpleMDEEditor to avoid SSR issues
+const SimpleMDEEditor = dynamic(() => import('react-simplemde-editor'), { ssr: false });
+
+let markdownEditorInstance = 0;
+const MarkdownEditor = React.memo(function MarkdownEditor({ initialValue, onSave, locale }: { initialValue: string; onSave: (val: string) => void; locale: 'en' | 'fr' }) {
+  const editorRef = React.useRef<MutableRefObject<any> | null>(null);
+
+  const instance = React.useRef(++markdownEditorInstance);
+  console.log('[MarkdownEditor] render', {
+    time: new Date().toISOString(),
+    instance: instance.current,
+    initialValue,
+  });
+
+  React.useEffect(() => {
+    setTimeout(() => {
+      if (editorRef.current) {
+        (editorRef.current as any).value(initialValue);
+      }
+    }, 1000);
+  }, [initialValue]);
+
+  const handleCancel = () => {
+    if (editorRef.current) {
+      (editorRef.current as any).value(initialValue);
+    }
+  };
+
+  return (
+    <div>
+      <SimpleMDEEditor
+        getMdeInstance={instance => {
+          (editorRef.current as any) = instance;
+        }}
+        options={{
+          spellChecker: false,
+          placeholder: t('bookPlanDisplay.edit', locale),
+          status: false,
+          autofocus: true,
+          autosave: undefined,
+        }}
+        defaultValue={initialValue}
+      />
+      <div className="mt-4 flex gap-2">
+        <button
+          className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+          onClick={() => {
+            const value = (editorRef.current as any)?.value();
+            onSave(value);
+          }}
+        >
+          {t('bookPlanDisplay.save', locale)}
+        </button>
+        <button
+          className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+          onClick={handleCancel}
+        >
+          {t('bookPlanDisplay.cancel', locale)}
+        </button>
+      </div>
+    </div>
+  );
+});
+
 export default function BookPlanDisplay({ locale }: BookPlanDisplayProps) {
   const [content, setContent] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [menuAnchor, setMenuAnchor] = useState<null | { mouseX: number; mouseY: number }>(null);
-  const [selectedText, setSelectedText] = useState('');
   const [chatPrompt, setChatPrompt] = useState('');
+  const [isClient, setIsClient] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  console.log('[BookPlanDisplay] render', {
+    time: new Date().toISOString(),
+    locale,
+    content,
+  });
 
   useEffect(() => {
     setLoading(true);
     setError(null);
-    fetch(`/${locale}/api/book-plan?format=md`)
+    fetch(`/api/book-plan?format=md`)
       .then(async (res) => {
         if (!res.ok) {
           const data = await res.json().catch(() => ({}));
@@ -37,32 +111,21 @@ export default function BookPlanDisplay({ locale }: BookPlanDisplayProps) {
       .finally(() => setLoading(false));
   }, [locale]);
 
-  // Helper to get selected text
-  const getSelectedText = () => {
-    if (typeof window !== 'undefined') {
-      return window.getSelection()?.toString() || '';
+  const handleSave = React.useCallback(async (val: string) => {
+    setSaveStatus('saving');
+    try {
+      const res = await fetch(`/api/book-plan`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rawMarkdown: val }),
+      });
+      if (!res.ok) throw new Error('Failed to save');
+      setContent(val);
+      setSaveStatus('success');
+    } catch (e) {
+      setSaveStatus('error');
     }
-    return '';
-  };
-
-  const handleContextMenu = (event: React.MouseEvent) => {
-    event.preventDefault();
-    const selText = getSelectedText();
-    setSelectedText(selText);
-    setMenuAnchor({ mouseX: event.clientX - 2, mouseY: event.clientY - 4 });
-  };
-
-  const handleCloseMenu = () => {
-    setMenuAnchor(null);
-  };
-
-  const handleAddToChat = () => {
-    if (selectedText) {
-      setChatPrompt(prev => prev + (prev && !prev.endsWith('\n') ? '\n' : '') +
-        'Voici un extrait du plan existant :\n```\n' + selectedText + '\n```\nMa demande :\n\n');
-    }
-    handleCloseMenu();
-  };
+  }, []);
 
   if (loading) {
     return (
@@ -77,31 +140,33 @@ export default function BookPlanDisplay({ locale }: BookPlanDisplayProps) {
     return <div className="text-center py-4 text-red-500">{t('bookPlanDisplay.error', locale)}: {error}</div>;
   }
 
-  if (!content) {
+  if (!isClient || content === null) {
+    return null;
+  }
+
+  if (!content.trim()) {
     return <div className="text-center py-4">{t('bookPlanDisplay.noPlan', locale)}</div>;
   }
 
   return (
     <Box
-      className="flex flex-col md:flex-row max-w-4xl mx-auto my-8 bg-white rounded shadow overflow-auto"
+      className="flex flex-col md:flex-row my-8 bg-white rounded shadow overflow-auto"
       sx={{ minHeight: 400 }}
       style={{ position: 'relative' }}
     >
       <div
         className="prose prose-lg flex-1 p-6"
-        onContextMenu={handleContextMenu}
         style={{ minWidth: 0 }}
       >
-        <ReactMarkdown>{content}</ReactMarkdown>
-        <Menu
-          open={!!menuAnchor}
-          onClose={handleCloseMenu}
-          anchorReference="anchorPosition"
-          anchorPosition={menuAnchor ? { top: menuAnchor.mouseY, left: menuAnchor.mouseX } : undefined}
-          PaperProps={{ style: { minWidth: 120 } }}
-        >
-          <MenuItem onClick={handleAddToChat} disabled={!selectedText}>{'Ajouter au chat'}</MenuItem>
-        </Menu>
+        <MarkdownEditor
+          key={content}
+          initialValue={content}
+          onSave={handleSave}
+          locale={locale}
+        />
+        {saveStatus === 'saving' && <div className="text-blue-600 mt-2">Sauvegarde en cours...</div>}
+        {saveStatus === 'success' && <div className="text-green-600 mt-2">Plan sauvegardé !</div>}
+        {saveStatus === 'error' && <div className="text-red-600 mt-2">Erreur lors de la sauvegarde.</div>}
       </div>
       <Box
         className="border-l border-gray-200 p-4 bg-gray-50"

@@ -82,7 +82,14 @@
     "savingScenes": "Saving...",
     "saveScenesSuccess": "Scenes saved successfully!",
     "saveScenesError": "Error while saving scenes.",
-    "error": "Error"
+    "error": "Error",
+    "edit": "Edit",
+    "save": "Save",
+    "cancel": "Cancel",
+    "addToChat": "Add to chat",
+    "checkCoherence": "Check coherence",
+    "checkingCoherence": "Checking coherence...",
+    "suggestionsFetched": "Coherence suggestions fetched!"
   },
   "chapterDevelopment": {
     "title": "Chapter development",
@@ -91,5 +98,13 @@
     "addChapter": "Add chapter",
     "updateChapter": "Update chapter",
     "cancel": "Cancel"
+  },
+  "redaction": {
+    "title": "Book Writing",
+    "placeholder": "Start writing your book here. Use the generated plan as a guide.",
+    "loading": "Loading the plan...",
+    "error": "Error loading the plan.",
+    "chaptersList": "List of chapters:",
+    "writeChapter": "Write chapter"
   }
 } 

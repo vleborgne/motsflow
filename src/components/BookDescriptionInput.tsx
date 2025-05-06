@@ -6,7 +6,7 @@ import { writingStyles, bookTypes } from '@/lib/bookOptions';
 
 interface BookDescriptionInputProps {
   onDescriptionChange: (description: string) => void;
-  onPlanGenerated: (plan: any) => void;
+  onPlanGenerated: (plan: string | object) => void;
   locale: 'en' | 'fr';
 }
 
@@ -106,7 +106,7 @@ export default function BookDescriptionInput({
     setErrorDetails(null);
 
     try {
-      const response = await fetch(`/${locale}/api/book-plan`, {
+      const response = await fetch(`/api/book-plan`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -132,7 +132,7 @@ export default function BookDescriptionInput({
         throw new Error(data.error);
       }
 
-      onPlanGenerated(data.plan);
+      onPlanGenerated(data.plan as string | object);
     } catch (err) {
       console.error('Error generating plan:', err);
       setError(err instanceof Error ? err.message : t('bookDescriptionInput.errors.generationFailed'));

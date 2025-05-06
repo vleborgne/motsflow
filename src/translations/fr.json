@@ -90,7 +90,17 @@
     "savingScenes": "Enregistrement...",
     "saveScenesSuccess": "Scènes enregistrées avec succès !",
     "saveScenesError": "Erreur lors de l'enregistrement des scènes.",
-    "error": "Erreur"
+    "error": "Erreur",
+    "edit": "Modifier",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "addToChat": "Ajouter au chat",
+    "checkCoherence": "Vérifier la cohérence",
+    "checkingCoherence": "Vérification de la cohérence...",
+    "suggestionsFetched": "Suggestions de cohérence récupérées !",
+    "loading": "Chargement du plan en cours...",
+    "chaptersList": "Liste des chapitres :",
+    "writeChapter": "Rédiger le chapitre"
   },
   "chapterDevelopment": {
     "title": "Développement des chapitres",
@@ -99,5 +109,9 @@
     "addChapter": "Ajouter un chapitre",
     "updateChapter": "Mettre à jour le chapitre",
     "cancel": "Annuler"
+  },
+  "redaction": {
+    "title": "Rédaction du livre",
+    "placeholder": "Commencez à rédiger votre livre ici. Utilisez le plan généré comme guide."
   }
 } 

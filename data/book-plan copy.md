@@ -9,12 +9,12 @@ Laila est une lycéenne passionnée d'informatique, avec des cheveux bruns boucl
 - I.1.b.1. Laila dans sa chambre, travaillant sur son ordinateur, expliquant à ses parents les bases de l'informatique.
 - I.1.b.2. Laila à l'école, où elle aide ses camarades de classe à résoudre des problèmes informatiques.
 - I.1.b.3. Laila participe à un dîner familial où ses parents, qui ne connaissent rien à l'informatique, lui posent des questions sur ses études et ses passions.
-- I.1.b.4. Laila a un conflit avec un camarade de classe qui l'accuse de tricher en utilisant ses compétences informatiques pour obtenir de meilleures notes.
-- I.1.b.5. Laila se défend en expliquant l'importance de l'éthique en informatique.
-- I.1.b.6. Des scènes de la vie quotidienne ultra-connectée : smartphones, réseaux sociaux, surveillance.
-- I.1.b.7. Des reportages sur les dégâts environnementaux causés par les industries polluantes.
-- I.1.b.8. Des manifestations écologistes réprimées par les forces de l'ordre.
-- I.1.b.9. Laila et Jean-Claude observent les conséquences de la pollution dans leur ville.
+- I.1.b.4. Des scènes de la vie quotidienne ultra-connectée : smartphones, réseaux sociaux, surveillance.
+- I.1.b.5. Des reportages sur les dégâts environnementaux causés par les industries polluantes.
+- I.1.b.6. Des manifestations écologistes réprimées par les forces de l'ordre.
+- I.1.b.7. Laila et Jean-Claude observent les conséquences de la pollution dans leur ville.
+- I.1.b.8. Laila a un conflit avec un camarade de classe qui l'accuse de tricher en utilisant ses compétences informatiques pour obtenir de meilleures notes.
+- I.1.b.9. Laila se défend en expliquant l'importance de l'éthique en informatique.
 
 ## I.2. Présentation de Jean-Claude
 
@@ -23,10 +23,10 @@ Jean-Claude est un militant écologiste et le meilleur ami de Laila. Il a des ch
 
 ### I.2.b. Scènes
 - I.2.b.1. Jean-Claude organise une manifestation écologiste à l'école.
-- I.2.b.2. Jean-Claude et Laila discutent de l'impact des industries polluantes.
-- I.2.b.3. Jean-Claude présente à Laila des documents sur les pires pollueurs mondiaux.
-- I.2.b.4. Jean-Claude et Laila planifient leur premier acte de sabotage.
-- I.2.b.5. Jean-Claude et Laila discutent des aspirations et des projets futurs de Laila.
+- I.2.b.2. Jean-Claude discute avec Laila de ses aspirations et de leurs projets futurs.
+- I.2.b.3. Jean-Claude et Laila discutent de l'impact des industries polluantes.
+- I.2.b.4. Jean-Claude présente à Laila des documents sur les pires pollueurs mondiaux.
+- I.2.b.5. Jean-Claude et Laila planifient leur premier acte de sabotage.
 
 ## I.3. Premiers Signes des Pouvoirs de Laila
 
@@ -172,158 +172,158 @@ Laila et Jean-Claude découvrent que même dans une zone sans technologie, ils n
 Laila et Jean-Claude sont confrontés à des obstacles de plus en plus importants, mettant en péril leur plan et leur sécurité.
 
 ### V.1.b. Scènes
-- V.1.b.1. Ils découvrent que leurs actions ont des conséquences imprévues sur des communautés locales.
-- V.1.b.2. Les autorités intensifient leurs recherches et utilisent des technologies de plus en plus avancées.
-- V.1.b.3. Darth_Banana commence à causer des perturbations majeures dans les systèmes informatiques mondiaux.
-- V.1.b.4. Laila et Jean-Claude doivent trouver des moyens de contrecarrer les plans de Darth_Banana.
-- V.1.b.5. Ils découvrent que certains de leurs alliés ont des motivations cachées.
-- V.1.b.6. Ils sont trahis par un membre de leur groupe, mettant en danger leur plan.
+- V.1.b.1. Ils découvrent que leurs actions ont des conséquences imprévues sur les innocents.
+- V.1.b.2. Ils doivent faire face à des attaques de plus en plus fréquentes des mercenaires.
+- V.1.b.3. Ils découvrent que Darth_Banana peut influencer les systèmes naturels autour d'eux.
+- V.1.b.4. Ils doivent trouver de nouvelles stratégies pour échapper à leurs poursuivants.
+- V.1.b.5. Laila utilise ses pouvoirs pour protéger leurs alliés et leur nouveau refuge.
+- V.1.b.6. Jean-Claude et Laila doivent faire des sacrifices pour protéger leur cause.
 
-## V.2. Confrontations Intenses
+## V.2. Alliés et Trahisons
 
 ### V.2.a. Résumé
-Laila et Jean-Claude sont impliqués dans des confrontations de plus en plus intenses avec les autorités et Darth_Banana.
+Laila et Jean-Claude découvrent que certains de leurs alliés ont des motivations cachées, mettant en péril leur confiance et leur sécurité.
 
 ### V.2.b. Scènes
-- V.2.b.1. Laila utilise ses pouvoirs pour désactiver un réseau de surveillance des autorités.
-- V.2.b.2. Jean-Claude et Laila sont pris en embuscade par des forces spéciales.
-- V.2.b.3. Ils doivent fuir à travers une forêt dense, poursuivis par des drones de surveillance.
-- V.2.b.4. Laila découvre que Darth_Banana peut contrôler des systèmes de défense automatisés.
-- V.2.b.5. Ils trouvent refuge dans une communauté autonome, mais doivent prouver leur valeur pour être acceptés.
-- V.2.b.6. Ils participent à une mission de sabotage avec leur nouvelle communauté, mais sont confrontés à des défis inattendus.
+- V.2.b.1. Ils découvrent que l'un de leurs alliés travaille en secret pour les autorités.
+- V.2.b.2. Ils doivent faire face à la trahison et à la méfiance au sein de leur groupe.
+- V.2.b.3. Ils découvrent de nouveaux alliés qui partagent réellement leurs idéaux.
+- V.2.b.4. Ils doivent prendre des décisions difficiles sur qui faire confiance.
+- V.2.b.5. Laila utilise ses pouvoirs pour démasquer les traîtres et protéger leurs véritables alliés.
+- V.2.b.6. Jean-Claude et Laila réévaluent leurs alliances et leurs stratégies.
 
-## V.3. Alliances et Trahisons
+## V.3. Confrontation avec Darth_Banana
 
 ### V.3.a. Résumé
-Laila et Jean-Claude doivent naviguer entre alliances et trahisons, testant leur confiance et leur résilience.
+Laila et Jean-Claude doivent affronter Darth_Banana dans une confrontation décisive, mettant à l'épreuve leurs compétences et leur détermination.
 
 ### V.3.b. Scènes
-- V.3.b.1. Ils découvrent que certains de leurs nouveaux alliés ont des liens avec les industries polluantes.
-- V.3.b.2. Ils sont trahis par un membre de leur groupe, qui révèle leur position aux autorités.
-- V.3.b.3. Laila et Jean-Claude doivent échapper à une embuscade tendue par leurs anciens alliés.
-- V.3.b.4. Ils trouvent de nouveaux alliés dans une communauté de hackers, qui les aident à contrecarrer les plans de Darth_Banana.
-- V.3.b.5. Ils participent à une opération de cyber-guerre avec leurs nouveaux alliés, mais découvrent que Darth_Banana a toujours une longueur d'avance.
-- V.3.b.6. Ils doivent faire face à une trahison au sein de leur nouvelle communauté, mettant en danger leur plan.
+- V.3.b.1. Ils découvrent le véritable objectif de Darth_Banana.
+- V.3.b.2. Ils élaborent un plan pour affronter Darth_Banana.
+- V.3.b.3. Ils rassemblent leurs alliés pour la confrontation finale.
+- V.3.b.4. Ils affrontent Darth_Banana dans une bataille numérique et physique.
+- V.3.b.5. Laila utilise ses pouvoirs pour neutraliser Darth_Banana.
+- V.3.b.6. Jean-Claude et Laila célèbrent leur victoire et planifient leurs prochaines actions.
 
 # VI. Point médian (Midpoint)
 
 ## VI.1. Révélation
 
 ### VI.1.a. Résumé
-Laila découvre une vérité choquante sur l'origine de ses pouvoirs et sur les véritables motivations de Darth_Banana.
+Laila découvre une vérité choquante sur ses pouvoirs et leur origine, changeant radicalement sa perception de sa mission.
 
 ### VI.1.b. Scènes
-- VI.1.b.1. Laila trouve des documents anciens révélant l'existence d'autres personnes avec des pouvoirs similaires aux siens.
-- VI.1.b.2. Elle découvre que ses pouvoirs sont liés à une ancienne prophétie sur la protection de la nature.
-- VI.1.b.3. Laila apprend que Darth_Banana est une entité créée par les industries polluantes pour contrôler les systèmes informatiques mondiaux.
-- VI.1.b.4. Elle comprend que Darth_Banana cherche à éliminer tous ceux qui possèdent des pouvoirs similaires aux siens.
-- VI.1.b.5. Laila partage ses découvertes avec Jean-Claude, qui est choqué par ces révélations.
-- VI.1.b.6. Ils décident de changer leur stratégie pour contrer les plans de Darth_Banana et des industries polluantes.
+- VI.1.b.1. Laila découvre des documents anciens révélant l'origine de ses pouvoirs.
+- VI.1.b.2. Elle apprend que ses pouvoirs sont liés à une ancienne prophétie.
+- VI.1.b.3. Elle partage cette révélation avec Jean-Claude et leurs alliés.
+- VI.1.b.4. Ils discutent des implications de cette révélation sur leur mission.
+- VI.1.b.5. Laila décide de suivre la prophétie pour accomplir sa destinée.
+- VI.1.b.6. Jean-Claude et Laila planifient leurs prochaines actions en fonction de cette nouvelle information.
 
 ## VI.2. Choix Radical
 
 ### VI.2.a. Résumé
-Laila et Jean-Claude doivent prendre une décision difficile qui changera radicalement leur approche et leurs alliances.
+Laila et Jean-Claude doivent prendre une décision radicale qui changera le cours de leur mission et de leurs vies.
 
 ### VI.2.b. Scènes
-- VI.2.b.1. Ils décident de former une alliance avec d'autres personnes possédant des pouvoirs similaires à ceux de Laila.
-- VI.2.b.2. Ils recherchent des informations sur ces personnes et tentent de les contacter.
-- VI.2.b.3. Ils organisent une réunion secrète avec leurs nouveaux alliés pour élaborer un plan commun.
-- VI.2.b.4. Ils découvrent que certains de leurs nouveaux alliés ont des motivations différentes des leurs.
-- VI.2.b.5. Ils doivent naviguer entre les divergences d'opinions et les conflits internes au sein de leur nouvelle alliance.
-- VI.2.b.6. Ils prennent une décision difficile sur la direction à prendre pour leur lutte contre les industries polluantes et Darth_Banana.
+- VI.2.b.1. Ils débattent des différentes options qui s'offrent à eux.
+- VI.2.b.2. Ils évaluent les risques et les conséquences de chaque option.
+- VI.2.b.3. Ils prennent une décision difficile qui implique des sacrifices personnels.
+- VI.2.b.4. Ils communiquent leur décision à leurs alliés.
+- VI.2.b.5. Ils mettent en œuvre leur plan et affrontent les conséquences de leur choix.
+- VI.2.b.6. Ils réévaluent leur mission et leurs objectifs à la lumière de ce choix.
 
-## VI.3. Nouvelle Stratégie
+## VI.3. Nouvelle Direction
 
 ### VI.3.a. Résumé
-Laila et Jean-Claude mettent en place une nouvelle stratégie pour contrer les plans de Darth_Banana et des industries polluantes.
+Laila et Jean-Claude s'engagent dans une nouvelle direction, plus déterminés que jamais à accomplir leur mission.
 
 ### VI.3.b. Scènes
-- VI.3.b.1. Ils élaborent un plan pour infiltrer les systèmes informatiques des industries polluantes et de Darth_Banana.
-- VI.3.b.2. Ils utilisent leurs nouveaux alliés pour créer des diversions et perturber les opérations des industries polluantes.
-- VI.3.b.3. Laila utilise ses pouvoirs pour accéder à des informations confidentielles sur les plans de Darth_Banana.
-- VI.3.b.4. Ils découvrent que Darth_Banana prépare une attaque massive sur les systèmes informatiques mondiaux.
-- VI.3.b.5. Ils doivent trouver un moyen de contrer cette attaque et de protéger les systèmes informatiques.
-- VI.3.b.6. Ils mettent en œuvre leur plan et affrontent Darth_Banana dans une confrontation numérique intense.
+- VI.3.b.1. Ils élaborent un nouveau plan d'action en fonction de leur décision.
+- VI.3.b.2. Ils rassemblent leurs alliés et les ressources nécessaires.
+- VI.3.b.3. Ils se préparent pour les défis à venir.
+- VI.3.b.4. Ils affrontent les premiers obstacles de leur nouvelle direction.
+- VI.3.b.5. Laila utilise ses pouvoirs pour surmonter ces obstacles.
+- VI.3.b.6. Jean-Claude et Laila célèbrent leurs premières victoires et planifient leurs prochaines étapes.
 
 # VII. Crise (All is lost)
 
-## VII.1. Le Héros au Plus Bas
+## VII.1. Laila au Plus Bas
 
 ### VII.1.a. Résumé
-Laila est au plus bas, perdant espoir face à la puissance de Darth_Banana et aux ressources illimitées des industries polluantes.
+Laila est au plus bas, perdant espoir et faisant face à des sacrifices personnels dévastateurs.
 
 ### VII.1.b. Scènes
-- VII.1.b.1. Laila et Jean-Claude subissent une défaite cuisante contre Darth_Banana, qui prend le contrôle de leurs systèmes.
-- VII.1.b.2. Ils découvrent que leurs actions ont eu des conséquences dévastatrices sur des communautés locales.
-- VII.1.b.3. Laila perd confiance en ses pouvoirs et en sa capacité à changer les choses.
-- VII.1.b.4. Jean-Claude tente de remonter le moral de Laila, mais elle reste abattue.
-- VII.1.b.5. Ils sont trahis par un de leurs alliés, qui révèle leur position aux autorités.
-- VII.1.b.6. Ils doivent fuir à nouveau, cette fois sans espoir de victoire.
+- VII.1.b.1. Laila subit une perte personnelle dévastatrice.
+- VII.1.b.2. Elle perd espoir et remet en question sa mission.
+- VII.1.b.3. Elle se confie à Jean-Claude sur ses doutes et ses peurs.
+- VII.1.b.4. Jean-Claude tente de la réconforter et de la motiver.
+- VII.1.b.5. Laila décide de faire un sacrifice personnel pour sauver leur mission.
+- VII.1.b.6. Elle affronte les conséquences de son sacrifice et trouve une nouvelle détermination.
 
-## VII.2. Perte d'Espoir
+## VII.2. Jean-Claude en Danger
 
 ### VII.2.a. Résumé
-Laila et Jean-Claude perdent espoir face à la situation désespérée et aux trahisons constantes.
+Jean-Claude est capturé par les autorités, mettant en péril leur mission et la sécurité de Laila.
 
 ### VII.2.b. Scènes
-- VII.2.b.1. Ils découvrent que leurs actions ont été utilisées par les industries polluantes pour renforcer leur contrôle.
-- VII.2.b.2. Laila et Jean-Claude sont séparés lors d'une embuscade tendue par les forces spéciales.
-- VII.2.b.3. Laila est capturée et emprisonnée par les autorités, qui tentent de comprendre ses pouvoirs.
-- VII.2.b.4. Jean-Claude tente de libérer Laila, mais échoue et est lui-même capturé.
-- VII.2.b.5. Ils sont soumis à des interrogatoires intensifs et des expériences pour comprendre leurs pouvoirs.
-- VII.2.b.6. Ils perdent tout espoir de s'échapper et de continuer leur lutte.
+- VII.2.b.1. Jean-Claude est capturé par les forces de l'ordre.
+- VII.2.b.2. Laila découvre la capture de Jean-Claude et doit agir rapidement.
+- VII.2.b.3. Elle élabore un plan pour le sauver avec l'aide de leurs alliés.
+- VII.2.b.4. Elle affronte les autorités pour libérer Jean-Claude.
+- VII.2.b.5. Jean-Claude est libéré, mais ils doivent affronter de nouveaux dangers.
+- VII.2.b.6. Ils réévaluent leur stratégie et se préparent pour la confrontation finale.
 
-## VII.3. Sacrifice
+## VII.3. Préparation pour la Confrontation Finale
 
 ### VII.3.a. Résumé
-Laila et Jean-Claude doivent faire un sacrifice ultime pour tenter de renverser la situation.
+Laila et Jean-Claude se préparent pour la confrontation finale, rassemblant toutes leurs forces et leurs ressources.
 
 ### VII.3.b. Scènes
-- VII.3.b.1. Laila décide de se sacrifier pour permettre à Jean-Claude de s'échapper et de continuer la lutte.
-- VII.3.b.2. Elle utilise ses pouvoirs pour créer une diversion et permettre à Jean-Claude de fuir.
-- VII.3.b.3. Jean-Claude refuse de laisser Laila se sacrifier et décide de rester avec elle.
-- VII.3.b.4. Ils élaborent un plan désespéré pour s'échapper ensemble.
-- VII.3.b.5. Ils affrontent les forces spéciales et Darth_Banana dans une confrontation finale.
-- VII.3.b.6. Ils réussissent à s'échapper, mais au prix de graves blessures et de la perte de certains de leurs alliés.
+- VII.3.b.1. Ils rassemblent leurs alliés et les ressources nécessaires.
+- VII.3.b.2. Ils élaborent un plan détaillé pour la confrontation finale.
+- VII.3.b.3. Ils se préparent mentalement et physiquement pour les défis à venir.
+- VII.3.b.4. Ils affrontent les premiers obstacles de leur plan.
+- VII.3.b.5. Laila utilise ses pouvoirs pour surmonter ces obstacles.
+- VII.3.b.6. Jean-Claude et Laila se motivent mutuellement et se préparent pour la bataille finale.
 
 # VIII. Climax & Résolution
 
 ## VIII.1. Confrontation Finale
 
 ### VIII.1.a. Résumé
-Laila et Jean-Claude affrontent Darth_Banana et les industries polluantes dans une confrontation finale décisive.
+Laila et Jean-Claude affrontent leurs ennemis dans une bataille décisive, mettant à l'épreuve leurs compétences et leur détermination.
 
 ### VIII.1.b. Scènes
-- VIII.1.b.1. Laila utilise la totalité de ses pouvoirs pour affronter Darth_Banana dans une bataille numérique intense.
-- VIII.1.b.2. Jean-Claude et leurs alliés créent des diversions pour perturber les opérations des industries polluantes.
-- VIII.1.b.3. Ils découvrent que Darth_Banana a un point faible : son besoin de contrôle absolu.
-- VIII.1.b.4. Laila exploite ce point faible pour désactiver Darth_Banana et reprendre le contrôle des systèmes informatiques.
-- VIII.1.b.5. Ils affrontent les forces spéciales et les mercenaires dans une bataille physique intense.
-- VIII.1.b.6. Ils réussissent à vaincre leurs ennemis et à libérer les systèmes informatiques du contrôle de Darth_Banana.
+- VIII.1.b.1. Ils affrontent les forces de l'ordre et les mercenaires dans une bataille épique.
+- VIII.1.b.2. Laila utilise ses pouvoirs pour neutraliser leurs ennemis.
+- VIII.1.b.3. Jean-Claude mène leurs alliés au combat.
+- VIII.1.b.4. Ils affrontent des obstacles imprévus et doivent improviser.
+- VIII.1.b.5. Ils surmontent les défis et remportent la victoire.
+- VIII.1.b.6. Ils célèbrent leur triomphe et réévaluent leur mission.
 
 ## VIII.2. Résolution du Conflit
 
 ### VIII.2.a. Résumé
-Laila et Jean-Claude parviennent à résoudre le conflit et à rétablir un équilibre dans le monde.
+Laila et Jean-Claude résolvent le conflit principal et accomplissent leur mission, mais ils doivent faire face aux conséquences de leurs actions.
 
 ### VIII.2.b. Scènes
-- VIII.2.b.1. Ils utilisent leurs pouvoirs et leurs compétences pour redistribuer la richesse mondiale et réparer les dégâts environnementaux.
-- VIII.2.b.2. Ils travaillent avec leurs alliés pour mettre en place des systèmes de contrôle et de surveillance pour éviter de futures catastrophes.
-- VIII.2.b.3. Ils participent à des conférences internationales pour présenter leurs solutions et leurs idées.
-- VIII.2.b.4. Ils sont reconnus comme des héros par les communautés locales et les organisations écologistes.
-- VIII.2.b.5. Ils reçoivent le soutien de gouvernements et d'organisations internationales pour continuer leur travail.
-- VIII.2.b.6. Ils célèbrent leur victoire avec leurs alliés et planifient leurs prochaines actions pour un monde meilleur.
+- VIII.2.b.1. Ils mettent en œuvre leur plan final pour redistribuer la richesse et protéger l'environnement.
+- VIII.2.b.2. Ils affrontent les dernières résistances et surmontent les obstacles.
+- VIII.2.b.3. Ils célèbrent leur succès et réévaluent leur mission.
+- VIII.2.b.4. Ils doivent faire face aux conséquences de leurs actions sur leur vie personnelle.
+- VIII.2.b.5. Laila et Jean-Claude décident de leur avenir et de leur rôle dans le monde.
+- VIII.2.b.6. Ils trouvent un nouvel équilibre et se préparent pour de futurs défis.
 
 ## VIII.3. Conséquences
 
 ### VIII.3.a. Résumé
-Laila et Jean-Claude doivent faire face aux conséquences de leurs actions et de leur victoire.
+Laila et Jean-Claude doivent faire face aux conséquences de leurs actions, tant positives que négatives, et trouver un nouvel équilibre.
 
 ### VIII.3.b. Scènes
-- VIII.3.b.1. Ils découvrent que leurs actions ont eu des conséquences imprévues sur l'économie mondiale.
-- VIII.3.b.2. Ils doivent trouver des moyens de gérer ces conséquences et de maintenir l'équilibre.
-- VIII.3.b.3. Ils reçoivent des menaces de nouvelles entités qui tentent de prendre le contrôle des systèmes informatiques.
-- VIII.3.b.4. Ils doivent rester vigilants et continuer à protéger le monde des nouvelles menaces.
-- VIII.3.b.5. Laila et Jean-Claude décident de continuer leur lutte pour un monde meilleur, malgré les défis et les dangers.
-- VIII.3.b.6. Ils célèbrent leur victoire et leur détermination à continuer leur combat pour la justice et l'environnement.
+- VIII.3.b.1. Ils découvrent les impacts positifs de leurs actions sur le monde.
+- VIII.3.b.2. Ils affrontent les conséquences négatives et les critiques.
+- VIII.3.b.3. Ils trouvent un nouvel équilibre dans leur vie personnelle et leur mission.
+- VIII.3.b.4. Ils réévaluent leur rôle dans le monde et leurs objectifs futurs.
+- VIII.3.b.5. Laila et Jean-Claude célèbrent leur succès et se préparent pour de nouveaux défis.
+- VIII.3.b.6. Ils trouvent un nouvel équilibre et se préparent pour l'avenir.
