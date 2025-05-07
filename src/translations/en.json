@@ -104,7 +104,8 @@
     "placeholder": "Start writing your book here. Use the generated plan as a guide.",
     "loading": "Loading the plan...",
     "error": "Error loading the plan.",
-    "chaptersList": "List of chapters:",
-    "writeChapter": "Write chapter"
+    "noParts": "No parts found in the plan.",
+    "generatePartDetail": "Generate part detail",
+    "write": "Write"
   }
 } 

@@ -3,13 +3,26 @@ import { getBookPlan, saveBookPlan } from '@/lib/fileStorage';
 import path from 'path';
 import fs from 'fs';
 import { promises as fsPromises } from 'fs';
-import { planWriterAgent, reviewerAgent } from '@/lib/agents';
+import { planWriterAgent } from '@/lib/agents';
 
 export async function GET(request: Request) {
   try {
     // Check for ?format=md in the query string
     const url = new URL(request.url);
     const format = url.searchParams.get('format');
+    const partNumber = url.searchParams.get('partNumber');
+    if (partNumber) {
+      // Return the markdown file for the requested part
+      const filePath = path.join(process.cwd(), 'data', 'parts', `part_${partNumber}.md`);
+      if (!fs.existsSync(filePath)) {
+        return new NextResponse('Not found', { status: 404 });
+      }
+      const content = fs.readFileSync(filePath, 'utf-8');
+      return new NextResponse(content, {
+        status: 200,
+        headers: { 'Content-Type': 'text/markdown; charset=utf-8' },
+      });
+    }
     if (format === 'md') {
       // Return the raw markdown file
       const filePath = path.join(process.cwd(), 'data', 'book-plan.md');
@@ -45,6 +58,8 @@ export async function POST(request: Request) {
     const configPath = path.join(process.cwd(), 'data', 'book-config.json');
     const configContent = fs.readFileSync(configPath, 'utf-8');
     const currentConfig = JSON.parse(configContent);
+    console.log(`[${requestId}] Loaded current plan:`, JSON.stringify(currentPlan, null, 2));
+    console.log(`[${requestId}] Loaded current config:`, JSON.stringify(currentConfig, null, 2));
 
     // Only require description, writingStyle, bookType if no plan exists
     if (!hasInitialPlan && (!description || !writingStyle || !bookType)) {
@@ -55,42 +70,25 @@ export async function POST(request: Request) {
       );
     }
 
-    // Structure instructions for the plan
-    const structureInstructions = `Règles de structure :
-- Chaque chapitre doit comporter un résumé ET une liste des scènes.
-- Les parties doivent être des titres de niveau 1 (#).
-- Les chapitres doivent être des titres de niveau 2 (##).
-- Les résumés et les listes de scènes doivent être des titres de niveau 3 (###).
-- La liste des scènes doit être sous forme de liste à puces sous le titre 'Scènes'.`;
+    // Structure instructions for the general plan
+    const structureInstructions = `Règles de structure :\n- Le plan doit uniquement comporter la liste des parties du livre, chacune accompagnée d'un résumé détaillé (au moins 10 lignes) de ce qui s'y passe, des enjeux, des personnages impliqués et de l'évolution de l'intrigue dans cette partie.\n- N'inclus pas les chapitres ni les scènes, ils seront écrits plus tard.\n- Les parties doivent être des titres de niveau 1 (#) et numérotées (I, II, III, etc.).`;
 
-    // 1. Génération du plan initial par le planWriterAgent
+    // Génération du plan général par le planWriterAgent
     const planWriterPrompt = hasInitialPlan
-      ? `Voici le plan actuel du livre :\n${JSON.stringify(currentPlan, null, 2)}\n\nVoici la configuration actuelle :\n${JSON.stringify(currentConfig, null, 2)}\n\nDemande de l'utilisateur :\n${prompt}\n\n${structureInstructions}\n\nTa tâche :\n1. Garde la structure générale du plan (parties, chapitres)\n2. Modifie uniquement les éléments demandés par l'utilisateur\n3. Assure la cohérence narrative entre les différentes parties\n4. Préserve les personnages existants et leurs arcs narratifs\n5. Respecte le style d'écriture et le type de livre\n6. Préserve les numéros de chapitres existants.`
-      : `Aucun plan initial n'existe. Génère un plan de livre complet à partir des informations suivantes :\nDescription : ${description}\nStyle d'écriture : ${writingStyle}\nType de livre : ${bookType}\nConfiguration :\n${JSON.stringify(currentConfig, null, 2)}\n\nDemande de l'utilisateur :\n${prompt}\n\n${structureInstructions}\n\nTa tâche :\n1. Crée la structure complète du plan (parties, chapitres)\n2. Assure la cohérence narrative\n3. Propose des personnages et leurs arcs narratifs\n4. Respecte le style d'écriture et le type de livre.`;
+      ? `Voici le plan général actuel du livre :\n${JSON.stringify(currentPlan, null, 2)}\n\nVoici la configuration actuelle :\n${JSON.stringify(currentConfig, null, 2)}\n\nDemande de l'utilisateur :\n${prompt}\n\n${structureInstructions}\n\nTa tâche :\n1. Garde la structure générale du plan (parties)\n2. Modifie uniquement les éléments demandés par l'utilisateur\n3. Assure la cohérence narrative entre les différentes parties\n4. Préserve les personnages existants et leurs arcs narratifs\n5. Respecte le style d'écriture et le type de livre\n6. Préserve les numéros de parties existants.`
+      : `Aucun plan initial n'existe. Génère un plan général de livre à partir des informations suivantes :\nDescription : ${description}\nStyle d'écriture : ${writingStyle}\nType de livre : ${bookType}\nConfiguration :\n${JSON.stringify(currentConfig, null, 2)}\n\nDemande de l'utilisateur :\n${prompt}\n\n${structureInstructions}\n\nTa tâche :\n1. Crée la structure complète du plan général (parties)\n2. Assure la cohérence narrative\n3. Propose des personnages et leurs arcs narratifs\n4. Respecte le style d'écriture et le type de livre.`;
 
-    const initialPlan = await planWriterAgent.submitQuery([planWriterPrompt]);
+    console.log(`[${requestId}] planWriterPrompt:`, planWriterPrompt);
+    const generalPlan = await planWriterAgent.submitQuery([planWriterPrompt]);
+    console.log(`[${requestId}] generalPlan generated`);
 
-    // 2. Relecture du plan par le reviewerAgent
-    const reviewPrompt = [
-      `Voici le plan du livre à relire :\n${initialPlan}\n\nPour chaque personnage et chaque lieu, vérifie qu'une description complète et détaillée est présente. Il est impératif que tous les personnages et tous les lieux soient bien décrits. Vérifie la cohérence du plan et détecte les répétitions. Génère une liste de suggestions ou corrections à appliquer, sous forme de liste structurée, sans réécrire le plan. TU NE DOIS FOURNIR QUE LA LISTE DES SUGGESTIONS ET CORRECTIONS ET PAS D'AUTRE TEXTE. TU NE DOIS PAS FOURNIR DE TEXTE EXPLICATIF.`
-    ];
-    const suggestions = await reviewerAgent.submitQuery(reviewPrompt);
-
-    // 3. Réécriture du plan par le planWriterAgent en prenant en compte les suggestions
-    const rewritePrompt = [
-      `Voici le plan initial :\n${initialPlan}\n\nVoici la liste des suggestions/corrections à appliquer :\n${typeof suggestions === 'string' ? suggestions : JSON.stringify(suggestions, null, 2)}\n\nMerci de réécrire le plan en appliquant uniquement ces suggestions, sans rien changer d'autre.`
-    ];
-    const improvedPlan = await planWriterAgent.submitQuery(rewritePrompt);
-
-    // Save the improved plan
-    console.log(`[${requestId}] Saving improved plan...`);
-    saveBookPlan(improvedPlan);
-    console.log(`[${requestId}] Improved plan saved successfully to data/book-plan.md`);
+    // Save the general plan
+    console.log(`[${requestId}] Saving general plan...`);
+    saveBookPlan(generalPlan);
+    console.log(`[${requestId}] General plan saved successfully to data/book-plan.md`);
 
     return NextResponse.json({
-      initialPlan,
-      suggestions,
-      improvedPlan
+      generalPlan
     });
   } catch (error) {
     console.error(`[${requestId}] Error in plan generation:`, error);
@@ -123,7 +121,7 @@ export async function PUT(request: Request) {
       }
       // Compose the prompt for the agent
       const agentPrompt = [
-        `Voici le plan actuel :\n${typeof currentPlan === 'string' ? currentPlan : JSON.stringify(currentPlan, null, 2)}\n\nVoici la demande de modification de l'utilisateur :\n${updates.modificationPrompt}\n\nMerci de modifier le plan pour qu'il corresponde à la demande, sans changer la structure générale ni le style.`
+        `Voici le plan général actuel :\n${typeof currentPlan === 'string' ? currentPlan : JSON.stringify(currentPlan, null, 2)}\n\nVoici la demande de modification de l'utilisateur :\n${updates.modificationPrompt}\n\nMerci de modifier le plan général pour qu'il corresponde à la demande, sans ajouter de chapitres ni de scènes.`
       ];
       console.log(`[${requestId}] Agent prompt:`, agentPrompt[0]);
       const modifiedPlan = await planWriterAgent.submitQuery(agentPrompt);

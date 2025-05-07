@@ -113,13 +113,15 @@ class Agent {
   private temperature: number;
   private provider: MistralProvider;
   private responseFormat?: AIConfig['responseFormat'];
+  private maxTokens?: number;
 
-  constructor({ systemPrompt, model, temperature, responseFormat }: { systemPrompt: string[]; model: string; temperature: number; responseFormat?: AIConfig['responseFormat'] }) {
+  constructor({ systemPrompt, model, temperature, responseFormat, maxTokens }: { systemPrompt: string[]; model: string; temperature: number; responseFormat?: AIConfig['responseFormat']; maxTokens?: number }) {
     this.systemPrompt = systemPrompt;
     this.model = model;
     this.temperature = temperature;
     this.provider = new MistralProvider();
     this.responseFormat = responseFormat;
+    this.maxTokens = maxTokens;
   }
 
   async submitQuery(query: string[], config: Partial<AIConfig> = {}) {
@@ -130,6 +132,7 @@ class Agent {
         model: this.model,
         temperature: this.temperature,
         responseFormat: config.responseFormat || this.responseFormat,
+        maxTokens: config.maxTokens || this.maxTokens,
         ...config,
       }
     );
@@ -194,4 +197,12 @@ function handleAIResponse(response: string | null, responseType: 'json_object' |
   if (!response) return null;
   if (responseType === 'text') return response;
   return parseAIResponse(response);
+}
+
+export interface AgentConfig {
+  systemPrompt: string[];
+  model: string;
+  temperature: number;
+  responseFormat?: { type: 'text' | 'json_object' };
+  maxTokens?: number;
 }

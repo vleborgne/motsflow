@@ -112,6 +112,11 @@
   },
   "redaction": {
     "title": "Rédaction du livre",
-    "placeholder": "Commencez à rédiger votre livre ici. Utilisez le plan généré comme guide."
+    "placeholder": "Commencez à rédiger votre livre ici. Utilisez le plan généré comme guide.",
+    "loading": "Chargement du plan en cours...",
+    "error": "Erreur lors du chargement du plan.",
+    "noParts": "Aucune partie trouvée dans le plan.",
+    "generatePartDetail": "Générer le détail de la partie",
+    "write": "Rédiger"
   }
 } 
