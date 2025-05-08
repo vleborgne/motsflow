@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { partDetailAgent, reviewerAgent } from '@/lib/agents';
+import { partDetailAgent, reviewerAgent, chapterListAgent, chapterDetailAgent, mdToJsonAgent } from '@/lib/agents';
 import { getBookPlan } from '@/lib/fileStorage';
 import fs from 'fs';
 import path from 'path';
@@ -32,65 +32,66 @@ export async function POST(request: Request) {
   console.log(`[${requestId}] Received part-detail POST request`);
   try {
     const body = await request.json();
-    const { partTitle, partSummary } = body;
-    console.log(`[${requestId}] Request body:`, JSON.stringify({ partTitle, partSummary }));
-    if (!partTitle || !partSummary) {
-      console.error(`[${requestId}] Missing required fields`);
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    const { partNumber } = body;
+    console.log(`[${requestId}] Received partNumber:`, partNumber);
+    if (!partNumber) {
+      console.error(`[${requestId}] Missing partNumber in request body`);
+      return NextResponse.json({ error: 'Missing partNumber' }, { status: 400 });
     }
-    // Load plan and config in backend
-    const plan = getBookPlan();
-    const configPath = path.join(process.cwd(), 'data', 'book-config.json');
-    const configContent = fs.readFileSync(configPath, 'utf-8');
-    const config = JSON.parse(configContent);
-    console.log(`[${requestId}] Loaded plan and config from backend.`);
-
-    const prompt = [
-      `Titre de la partie : ${partTitle}\nRésumé : ${partSummary}\n\nPlan général :\n${typeof plan === 'string' ? plan : JSON.stringify(plan, null, 2)}\n\nConfiguration :\n${typeof config === 'string' ? config : JSON.stringify(config, null, 2)}\n\nGénère le plan détaillé de cette partie selon les instructions.`
+    // 1. Extract the part's Markdown from book-plan.md
+    const bookPlanPath = path.join(process.cwd(), 'data', 'book-plan.md');
+    console.log(`[${requestId}] Reading book plan from:`, bookPlanPath);
+    const bookPlanContent = fs.readFileSync(bookPlanPath, 'utf-8');
+    // Find the section for the requested part
+    const partRegex = new RegExp(`^#\\s*${partNumber}\\b[^\\n]*\\n([\\s\\S]*?)(?=^#\\s*[IVXLCDM0-9]+\\b|\\Z)`, 'm');    const match = bookPlanContent.match(partRegex);
+    console.log(`[${requestId}] Regex match result:`, match ? 'FOUND' : 'NOT FOUND');
+    if (!match) {
+      console.error(`[${requestId}] Part ${partNumber} not found in book-plan.md`);
+      return NextResponse.json({ error: `Part ${partNumber} not found in book-plan.md` }, { status: 404 });
+    }
+    const partMarkdown = `# ${partNumber}${match[0].split('\n')[0].slice(2)}\n${match[1]}`;
+    console.log(`[${requestId}] Extracted partMarkdown (first 200 chars):`, partMarkdown.slice(0, 200));
+    // 2. Use chapterListAgent to get the chapter list as JSON
+    const chapterListPrompt = [
+      `Titre de la partie : ${partNumber}\n\nPlan général :\n${partMarkdown}`
     ];
-    console.log(`[${requestId}] Generating part detail with partDetailAgent...`);
-    const detail = await partDetailAgent.submitQuery(prompt);
-    console.log(`[${requestId}] Part detail generated.`);
-
-    // Review the generated detail
-    const reviewPrompt = [
-      `Voici le plan détaillé généré pour la partie "${partTitle}" :\n${detail}\n\nMerci de vérifier la cohérence, les répétitions et le style de ce plan détaillé. Retourne uniquement une liste de suggestions ou corrections à appliquer, sous forme de liste structurée (JSON), sans réécrire le plan.`
-    ];
-    console.log(`[${requestId}] Reviewing part detail with reviewerAgent...`);
-    const review = await reviewerAgent.submitQuery(reviewPrompt);
-    console.log(`[${requestId}] Review completed. Review:`, review);
-
-    // If there are suggestions/corrections, ask partDetailAgent to correct
-    let correctedDetail = detail;
-    let reviewObj: any = review;
-    if (typeof review === 'string') {
-      try { reviewObj = JSON.parse(review); } catch {}
+    const chapterListResult = await chapterListAgent.submitQuery(chapterListPrompt) as { chapters: { title: string, description: string }[] };
+    console.log(`[${requestId}] chapterListAgent result:`, JSON.stringify(chapterListResult).slice(0, 200));
+    if (!chapterListResult || !Array.isArray(chapterListResult.chapters)) {
+      console.error(`[${requestId}] Failed to extract chapters from part`);
+      return NextResponse.json({ error: 'Failed to extract chapters from part' }, { status: 500 });
     }
-    if (Array.isArray(reviewObj) ? reviewObj.length > 0 : Object.keys(reviewObj).length > 0) {
-      console.log(`[${requestId}] Corrections needed, sending to partDetailAgent...`);
-      const correctionPrompt = [
-        `Voici le plan détaillé généré pour la partie "${partTitle}" :\n${detail}\n\nVoici la liste des suggestions ou corrections à appliquer :\n${JSON.stringify(reviewObj, null, 2)}\n\nMerci de corriger le plan détaillé en appliquant ces suggestions, sans ajouter de texte explicatif, et en respectant le format Markdown demandé.`
-      ];
-      correctedDetail = await partDetailAgent.submitQuery(correctionPrompt);
-      console.log(`[${requestId}] Corrections applied.`);
-    } else {
-      console.log(`[${requestId}] No corrections needed.`);
-    }
-
-    // Save the result in data/parts/part_${partNumber}.md
-    const partNumber = extractPartNumber(partTitle);
+    // 3. For each chapter, generate a list of scenes in Markdown and save to a file
     const dirPath = path.join(process.cwd(), 'data', 'parts');
+    console.log(`[${requestId}] Parts directory:`, dirPath);
     if (!fs.existsSync(dirPath)) {
       fs.mkdirSync(dirPath, { recursive: true });
       console.log(`[${requestId}] Created directory: ${dirPath}`);
     }
-    const filePath = path.join(dirPath, `part_${partNumber}.md`);
-    fs.writeFileSync(filePath, correctedDetail, 'utf-8');
-    console.log(`[${requestId}] Saved part detail to ${filePath}`);
-
-    return NextResponse.json({ detail: correctedDetail, review });
+    const chaptersWithSceneFiles: { title: string; description: string; scenesFile: string }[] = [];
+    for (let i = 0; i < chapterListResult.chapters.length; i++) {
+      const chapter = chapterListResult.chapters[i];
+      const chapterTitle: string = chapter.title;
+      const chapterDesc: string = chapter.description;
+      const chapterDetailPrompt = [
+        `Titre du chapitre : ${chapterTitle}\nDescription : ${chapterDesc}\n\nChapitres de la partie :\n${chapterListResult.chapters.map((c, idx) => `- ${c.title}: ${c.description}`).join('\n')}`
+      ];
+      console.log(`[${requestId}] Generating scenes for chapter ${i + 1}:`, chapterTitle);
+      const chapterDetailMd = await chapterDetailAgent.submitQuery(chapterDetailPrompt);
+      const chapterFile = `part_${partNumber}_chapter_${i + 1}.md`;
+      const chapterFilePath = path.join(dirPath, chapterFile);
+      fs.writeFileSync(chapterFilePath, String(chapterDetailMd), 'utf-8');
+      console.log(`[${requestId}] Saved scenes Markdown to:`, chapterFilePath);
+      chaptersWithSceneFiles.push({
+        title: chapterTitle,
+        description: chapterDesc,
+        scenesFile: chapterFile
+      });
+    }
+    console.log(`[${requestId}] Successfully generated chapters and scenes.`);
+    return NextResponse.json({ chapters: chaptersWithSceneFiles });
   } catch (error) {
     console.error(`[${requestId}] Error in part-detail:`, error);
     return NextResponse.json({ error: error instanceof Error ? error.message : 'Failed to generate part detail' }, { status: 500 });
   }
-} 
+}

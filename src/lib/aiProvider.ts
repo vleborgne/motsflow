@@ -2,9 +2,22 @@
 const MISTRAL_BASE_URL = process.env.MISTRAL_BASE_URL || 'https://api.mistral.ai';
 const MISTRAL_API_KEY = process.env.MISTRAL_API_KEY;
 
+// OpenAI configuration
+const OPENAI_BASE_URL = process.env.OPENAI_BASE_URL || 'https://api.openai.com';
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+
+// Set PROVIDER to either 'openai' or 'mistral'
+export const PROVIDER: string = process.env.AI_PROVIDER || 'openai';
+
+// Generic model mapping for both providers
+export const LARGE_MODEL = PROVIDER === 'mistral' ? 'mistral-large-latest' : 'gpt-4o';
+export const MEDIUM_MODEL = PROVIDER === 'mistral' ? 'mistral-medium-latest' : 'gpt-3.5-turbo';
+
 // Interface for AI providers
 interface AIProvider {
   generateCompletion(systemPrompt: string[], userPrompt: string[], config: AIConfig): Promise<unknown>;
+  getLargeModelName(): string;
+  getMediumModelName(): string;
 }
 
 interface AIConfig {
@@ -86,6 +99,13 @@ class MistralProvider implements AIProvider {
     }
   }
 
+  getLargeModelName(): string {
+    return 'mistral-large-latest';
+  }
+
+  getMediumModelName(): string {
+    return 'mistral-medium-latest';
+  }
 }
 
 // Factory to create the appropriate provider (now only Mistral)
@@ -111,15 +131,15 @@ class Agent {
   private systemPrompt: string[];
   private model: string;
   private temperature: number;
-  private provider: MistralProvider;
+  private provider: AIProvider;
   private responseFormat?: AIConfig['responseFormat'];
   private maxTokens?: number;
 
-  constructor({ systemPrompt, model, temperature, responseFormat, maxTokens }: { systemPrompt: string[]; model: string; temperature: number; responseFormat?: AIConfig['responseFormat']; maxTokens?: number }) {
+  constructor({ systemPrompt, model, temperature, responseFormat, maxTokens, provider }: { systemPrompt: string[]; model: string; temperature: number; responseFormat?: AIConfig['responseFormat']; maxTokens?: number; provider?: AIProvider }) {
     this.systemPrompt = systemPrompt;
     this.model = model;
     this.temperature = temperature;
-    this.provider = new MistralProvider();
+    this.provider = provider || new MistralProvider();
     this.responseFormat = responseFormat;
     this.maxTokens = maxTokens;
   }
@@ -205,4 +225,150 @@ export interface AgentConfig {
   temperature: number;
   responseFormat?: { type: 'text' | 'json_object' };
   maxTokens?: number;
+}
+
+// Shared helper for formatting prompts
+function buildChatMessages(systemPrompt: string[], userPrompt: string[]) {
+  return [
+    ...systemPrompt.map(prompt => ({ role: 'system', content: prompt })),
+    ...userPrompt.map(prompt => ({ role: 'user', content: prompt })),
+  ];
+}
+
+// Shared helper for building request body
+function buildChatRequestBody({ model, messages, temperature, maxTokens, responseFormat }: {
+  model: string;
+  messages: any[];
+  temperature?: number;
+  maxTokens?: number;
+  responseFormat?: { type: 'json_object' | 'text' };
+}) {
+  // OpenAI and Mistral use the same field names for these
+  const body: any = {
+    model,
+    messages,
+    temperature: temperature ?? 0.7,
+    max_tokens: maxTokens,
+  };
+  if (responseFormat) {
+    // OpenAI uses response_format: { type: 'json_object' } for JSON mode
+    body.response_format = responseFormat;
+  }
+  return body;
+}
+
+// OpenAI Implementation
+class OpenAIProvider implements AIProvider {
+  private baseUrl: string;
+  private apiKey: string;
+
+  constructor() {
+    this.baseUrl = OPENAI_BASE_URL;
+    this.apiKey = OPENAI_API_KEY || '';
+    if (!this.apiKey) {
+      console.error('OPENAI_API_KEY is missing from environment variables');
+      throw new Error('OPENAI_API_KEY is missing from environment variables');
+    }
+  }
+
+  async generateCompletion(systemPrompt: Array<string>, userPrompt: Array<string>, config: AIConfig = {}) {
+    const {
+      model = 'gpt-3.5-turbo',
+      maxTokens = 8000,
+      responseFormat = { type: 'json_object' as const },
+    } = config;
+
+    const messages = buildChatMessages(systemPrompt, userPrompt);
+    const endpoint = '/v1/chat/completions';
+    const requestBody = buildChatRequestBody({
+      model,
+      messages,
+      temperature: config.temperature,
+      maxTokens,
+      responseFormat,
+    });
+
+    try {
+      const response = await fetch(`${this.baseUrl}${endpoint}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.apiKey}`,
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('OpenAI API Error Details:', {
+          status: response.status,
+          statusText: response.statusText,
+          errorBody: errorText
+        });
+        throw new Error(`OpenAI API error: ${response.status} ${response.statusText}\n${errorText}`);
+      }
+
+      const data = await response.json();
+      const content = data.choices?.[0]?.message?.content;
+      if (!content) {
+        console.error('OpenAI returned empty response');
+        return null;
+      }
+      if (responseFormat?.type === 'text') {
+        return content;
+      }
+      return handleAIResponse(content, responseFormat?.type);
+    } catch (error) {
+      console.error('OpenAI API Error:', error);
+      throw error;
+    }
+  }
+
+  getLargeModelName(): string {
+    return 'gpt-4o';
+  }
+
+  getMediumModelName(): string {
+    return 'gpt-3.5-turbo';
+  }
+}
+
+export { OpenAIProvider };
+
+/**
+ * Utility to generate long text with an Agent, splitting the generation into several calls if needed.
+ * This function will repeatedly call the agent with a continuation prompt until the model stops or a limit is reached.
+ * @param agent The Agent instance to use
+ * @param userPrompt The initial user prompt (array of strings)
+ * @param options Optional: maxTokens (default 4096), stopSequence (optional)
+ * @returns The concatenated long text
+ */
+export async function generateLongText(
+  agent: Agent,
+  userPrompt: string[],
+  options: { maxTokens?: number; stopSequence?: string } = {}
+): Promise<string> {
+  const maxTokens = options.maxTokens ?? 4096;
+  const stopSequence = options.stopSequence ?? undefined;
+  let fullText = '';
+  let continuePrompt = [...userPrompt];
+  let finished = false;
+  let iteration = 0;
+
+  while (!finished && iteration < 10) { // Safety limit to avoid infinite loops
+    const response = await agent.submitQuery(continuePrompt, { maxTokens });
+    const text = typeof response === 'string' ? response : (response as any)?.content ?? '';
+    fullText += text;
+
+    // If the response is short or ends with a typical ending, stop
+    if (!text || text.trim().toLowerCase().endsWith('fin.') || text.length < 100) {
+      finished = true;
+    } else {
+      // Prepare the prompt to ask for the continuation
+      continuePrompt = ['Continue le texte précédent sans répéter ni résumer.'];
+    }
+    iteration++;
+  }
+
+  return fullText;
 }

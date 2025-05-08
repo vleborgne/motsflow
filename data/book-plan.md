@@ -1,31 +1,167 @@
-# I. Setup
+# I. Vie ordinaire
 
-Laila est une lycéenne passionnée d'informatique, avec des cheveux bruns bouclés, des yeux verts perçants et une silhouette athlétique. Elle est curieuse, déterminée et empathique, toujours prête à aider les autres. Ses motivations sont de comprendre et maîtriser ses compétences en informatique pour aider les autres et protéger l'environnement. Ses obstacles internes incluent ses doutes et ses peurs face à ses nouvelles responsabilités, tandis que ses obstacles externes sont les autorités et les industries polluantes qui la traquent.
+Laila est une lycéenne brillante passionnée d'informatique qui mène une vie relativement ordinaire. Elle passe ses journées entre le lycée et le club informatique où elle brille par ses talents de programmeuse. C'est une adolescente ayant des relations tendues avec ses parents, qui ne comprennent pas son intérêt pour les nouvelles technologies. Son seul véritable allié et ami est Jean-Claude, un camarade de classe aux convictions écologistes ferventes. Dans cette première partie, l'accent est mis sur la vie quotidienne de Laila et ses interactions avec Jean-Claude, soulignant ses compétences exceptionnelles en informatique. Cela prépare le terrain pour les événements extraordinaires à venir.
 
-# II. Découverte des pouvoirs
+## Chapitres
 
-Laila commence à remarquer des événements étranges liés à ses interactions avec les ordinateurs. Elle découvre qu'elle a la capacité de manipuler les systèmes informatiques d'une manière qu'elle ne peut expliquer. Au début, elle utilise ses pouvoirs de manière anodine, comme pour réparer des bugs mineurs ou améliorer les performances de ses programmes. Elle partage ses découvertes avec Jean-Claude, son meilleur ami et confident, qui est également passionné par l'informatique. Ensemble, ils explorent les limites de ses capacités et découvrent qu'elle peut accéder à des informations protégées et manipuler des données à distance. Ils réalisent que ces pouvoirs pourraient être utilisés pour des causes plus grandes, mais ils sont encore réticents à les utiliser de manière significative, craignant les conséquences potentielles.
+- **I.1 : La routine de Laila**  
+  Laila jongle entre ses études, son club informatique et sa famille.
 
-# III. Élément déclencheur
+- **I.2 : Un passionné de justice**  
+  Présentation de Jean-Claude et de sa passion pour l'écologie.
 
-Laila et Jean-Claude élaborent un plan pour redistribuer la richesse mondiale et saboter les industries polluantes en utilisant les capacités numériques de Laila. Ils commencent à chercher des informations sur les comptes bancaires des grandes entreprises et planifient leur première opération : détourner des fonds vers des organisations écologistes. Ils discutent des risques et des conséquences possibles, conscients que leurs actions auront un impact majeur sur le monde économique. Ils mettent en œuvre leur premier acte de sabotage, utilisant les pouvoirs de Laila pour accéder à des informations confidentielles et redistribuer les fonds. Leur succès initial les motive à continuer, mais ils savent que les autorités ne tarderont pas à les traquer.
+- **I.3 : L'univers numérique**  
+  Exploration du monde numérique à travers l'œil de Laila.
 
-# IV. Premier obstacle
+- **I.4 : Disconnect**  
+  Laila se sent déconnectée de sa famille, augmentant sa dépendance à la technologie.
 
-Les autorités commencent à traquer Laila et Jean-Claude, mettant en place des mesures de sécurité renforcées pour les arrêter. Ils découvrent des indices sur les actions de Laila et Jean-Claude, et une première confrontation avec les forces de l'ordre a lieu. Laila utilise ses pouvoirs pour échapper à la capture, et ils se cachent dans une vieille maison abandonnée en périphérie de la ville. Ils discutent de leurs prochaines étapes et découvrent que les autorités utilisent des technologies avancées pour les traquer. Confrontés aux dilemmes éthiques de leurs actions, ils doivent décider jusqu'où ils sont prêts à aller pour leur cause. Ils rencontrent des victimes collatérales de leurs sabotages et discutent de la limite entre justice et vengeance.
+- **I.5 : Un projet prometteur**  
+  Laila et Jean-Claude élaborent ensemble un projet de hack écologique pour le club informatique.
 
-# V. Premier point de bascule (Plot Point 1)
+- **I.6 : Un jour ordinaire**  
+  La vie continue normalement, mais une étrange sensation persiste chez Laila.
 
-Laila et Jean-Claude décident de changer leur approche pour échapper aux autorités et à Darth_Banana. Ils se dirigent vers une zone sans technologie, une vallée isolée avec des montagnes escarpées et des forêts denses. Ils s'installent dans une nouvelle cachette et planifient leur prochaine étape. Ils découvrent les défis de la vie sans technologie et trouvent des moyens alternatifs de communication et d'organisation. Ils rencontrent de nouveaux alliés, des personnes qui partagent leurs idéaux et peuvent les aider à échapper à leurs poursuivants. Ensemble, ils discutent de leurs plans et de leurs objectifs, partagent des informations cruciales sur les industries polluantes et planifient une nouvelle opération en utilisant des méthodes non technologiques pour éviter la détection.
+# II. Appel au destin
 
-# VI. Confrontation avec Darth_Banana
+Laila commence à remarquer des phénomènes étranges lorsqu'elle est en contact avec des appareils électroniques. D'abord, elle pense à un hasard, mais les incidents deviennent de plus en plus fréquents et incontrôlables. Sa rencontre avec Jean-Claude prend un tournant décisif lorsqu'ils découvrent ensemble que ces phénomènes pourraient être le résultat de capacités extraordinaires qu'elle posséderait. Bien que fascinée et intriguée par cette découverte, Laila est également effrayée par les conséquences possibles.
 
-Darth_Banana, une entité mystérieuse issue du monde numérique, commence à interférer avec les plans de Laila et Jean-Claude. Laila détecte une présence étrange dans les systèmes informatiques et Darth_Banana envoie des messages cryptés à Laila. Ils tentent de comprendre les motivations de Darth_Banana et ont leur première confrontation numérique. Laila utilise ses pouvoirs pour contrer les attaques de Darth_Banana, mais découvre que cette entité peut influencer les systèmes à distance. Ils recherchent des informations sur Darth_Banana et réalisent que cette entité représente une menace bien plus grande qu'ils ne l'avaient imaginé.
+## Chapitres
 
-# VII. Climax
+- **II.1 : Anomalies**  
+  Les premiers incidents où Laila interfère accidentellement avec des appareils.
 
-Laila et Jean-Claude, avec l'aide de leurs nouveaux alliés, élaborent un plan pour neutraliser Darth_Banana et continuer leur combat contre les industries polluantes. Ils utilisent une combinaison de méthodes technologiques et non technologiques pour éviter la détection et mener à bien leur mission. Ils sont confrontés à des défis majeurs, tant sur le plan physique que mental, et doivent faire preuve de courage et de détermination pour surmonter les obstacles. La confrontation finale avec Darth_Banana est intense et éprouvante, mettant à l'épreuve les limites de leurs compétences et de leur résilience.
+- **II.2 : La révélation**  
+  Laila et Jean-Claude réalisent que ces anomalies sont liées à elle.
 
-# VIII. Résolution
+- **II.3 : Collision numérique**  
+  Les incidents deviennent dangereux, causant des perturbations locales.
 
-Après une confrontation épique, Laila et Jean-Claude parviennent à neutraliser Darth_Banana et à déjouer les plans des industries polluantes. Ils célèbrent leur victoire avec leurs nouveaux alliés, mais savent que leur combat est loin d'être terminé. Ils réfléchissent à l'avenir et aux prochaines étapes de leur mission, conscients que de nouveaux défis les attendent. Le récit se termine par une ouverture vers une suite possible, où Laila est capturée dans un univers numérique, face à Darth_Banana, prête à continuer son combat pour un monde meilleur.
+- **II.4 : La discussion cruciale**  
+  Laila et Jean-Claude discutent des implications de ses pouvoirs.
+
+- **II.5 : La tentation**  
+  L'idée d'utiliser ces pouvoirs pour des causes écologiques émerge.
+
+- **II.6 : Détermination fragile**  
+  Malgré ses doutes, Laila commence à entrevoir le potentiel de ses capacités.
+
+# III. Découverte du pouvoir
+
+Laila plonge plus profondément dans la compréhension de ses pouvoirs. Avec Jean-Claude, elle expérimente ses capacités et découvre qu'elle peut non seulement contrôler, mais aussi exploiter les systèmes informatiques à sa guise. Cette prise de conscience est libératrice, mais aussi terrifiante, accentuant la dualité entre le bien et le mal. Laila devient de plus en plus tentée par les exploits possibles. Cependant, elle commence également à souffrir de maux de tête et de perte de contrôle en raison de l'utilisation intensive de ses pouvoirs.
+
+## Chapitres
+
+- **III.1 : Exploration des limites**  
+  Laila et Jean-Claude testent les nouvelles capacités de Laila.
+
+- **III.2 : Le choc numérique**  
+  Une expérience tourne mal, causant une panne électrique majeure.
+
+- **III.3 : L'apprentie sorcière**  
+  Laila doit faire face aux premiers doutes sur l'éthique de son pouvoir.
+
+- **III.4 : Une mystérieuse trace**  
+  Ils découvrent qu'une entité mystérieuse pourrait les surveiller.
+
+- **III.5 : Frissons et dangers**  
+  Les dangers de l'utilisation des pouvoirs de Laila deviennent évidents.
+
+- **III.6 : Les ombres du doute**  
+  Laila commence à douter de la justesse de leurs actions.
+
+# IV. Entraînement et obstacles
+
+Convaincus qu'ils peuvent changer le monde, Laila et Jean-Claude mettent au point des plans complexes pour saboter des industries polluantes. Cependant, plus ils avancent, plus les obstacles deviennent nombreux. Ils rencontrent des résistances provenant non seulement de l'extérieur, mais aussi de leurs propres convictions qui vacillent. Laila fait face à une pression psychologique accrue et à la menace croissante d'une entité numérique hostile qui semble vouloir les arrêter à tout prix.
+
+## Chapitres
+
+- **IV.1 : Sabotage ciblé**  
+  Les premiers actes de sabotage écologique sont mis en place.
+
+- **IV.2 : Répercussions inattendues**  
+  Les conséquences mondiales commencent à se faire sentir.
+
+- **IV.3 : L'ombre de Darth_Banana**  
+  Des signes que Darth_Banana est sur leurs traces apparaissent.
+
+- **IV.4 : Faille dans le plan**  
+  Une erreur critique remet en question toute leur stratégie.
+
+- **IV.5 : Éthique en question**  
+  Laila et Jean-Claude discutent des implications morales de leurs actions.
+
+- **IV.6 : Dernier avertissement**  
+  Un message menaçant de Darth_Banana les pousse à fuir.
+
+# V. Crise ou trahison
+
+Acculés par l'entité numérique Darth_Banana et une société civile déstabilisée par leurs actions, Laila et Jean-Claude sont poussés à leurs limites. Face à un dilemme moral et la menace constante de capture, leur loyauté et leur amitié sont mises à dure épreuve. Laila est tourmentée par l'idée que leurs actions pourraient avoir plus de conséquences néfastes que positives. La tension atteint son paroxysme lorsqu'ils réalisent l'immensité de la puissance de Darth_Banana.
+
+## Chapitres
+
+- **V.1 : Révélations dérangeantes**  
+  Laila découvre des informations inquiétantes sur Darth_Banana.
+
+- **V.2 : Seuil critique**  
+  Le monde est en pleine crise et la pression augmente sur le duo.
+
+- **V.3 : Division interne**  
+  Des désaccords majeurs apparaissent entre Laila et Jean-Claude.
+
+- **V.4 : Cours ou combat**  
+  Pris au piège, ils doivent décider de fuir ou de combattre.
+
+- **V.5 : Choc digital**  
+  Une confrontation numérique directe avec Darth_Banana se produit.
+
+- **V.6 : Éclipse numérique**  
+  Traqués et débordés, ils se réfugient dans une zone sans technologie.
+
+# VI. Maîtrise et victoire
+
+Refuges dans une zone sans technologie, Laila et Jean-Claude trouvent enfin un moment de répit, mais le poids de leurs actions les hante. Laila parvient peu à peu à comprendre la nature de son pouvoir et décide d'en prendre le contrôle total pour corriger leurs erreurs. Après une ultime confrontation avec Darth_Banana, elle réussit à neutraliser temporairement l'entité numérique, offrant une chance de repartir sur de nouvelles bases.
+
+## Chapitres
+
+- **VI.1 : Réfugiés numériques**  
+  Laila et Jean-Claude s'adaptent à la vie sans technologie.
+
+- **VI.2 : La méditation de Laila**  
+  Laila réfléchit profondément aux implications de ses pouvoirs.
+
+- **VI.3 : Reconnexion intérieure**  
+  Elle commence à maîtriser pleinement ses capacités.
+
+- **VI.4 : Ultime plan**  
+  Ils élaborent un plan pour neutraliser Darth_Banana.
+
+- **VI.5 : Confrontation finale**  
+  L'affrontement décisif avec Darth_Banana a lieu.
+
+- **VI.6 : L'ombre de la victoire**  
+  Darth_Banana est vaincu, mais la paix semble incertaine.
+
+# VII. Retour avec nouvelle identité
+
+Avec la victoire sur Darth_Banana, Laila et Jean-Claude reviennent dans le monde technologique transformés par leur expérience. Cependant, la réalité numérique reste fragile, et Laila se retrouve aspirée dans un univers numérique en proie à l'entité qu'elle pensait avoir vaincue. Ce nouveau défi ouvre la voie à une suite potentielle, où les enjeux entoureront non seulement la survie de Laila, mais aussi la réelle signification de contrôler la technologie.
+
+## Chapitres
+
+- **VII.1 : Reconstruction**  
+  Le monde commence à se reconstruire après le chaos.
+
+- **VII.2 : Nouveaux débuts**  
+  Laila et Jean-Claude établissent une nouvelle mission pour un futur durable.
+
+- **VII.3 : Spectre numérique**  
+  Les signes d'un retour de Darth_Banana apparaissent.
+
+- **VII.4 : Réflexions sur le futur**  
+  Laila contemple les conséquences de leur lutte.
+
+- **VII.5 : Capture digitale**  
+  Laila est tirée dans un monde numérique, face à Darth_Banana.
+
+- **VII.6 : Une suite en gestation**  
+  La lutte n'est pas finie, le chemin vers la réconciliation reste incertain.

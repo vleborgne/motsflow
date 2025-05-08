@@ -58,6 +58,9 @@ export default function Redaction({ locale = 'fr' }: { locale?: Locale }) {
   const [chatPrompt, setChatPrompt] = useState('');
   const [redacting, setRedacting] = useState(false);
   const [redactResult, setRedactResult] = useState<any>(null);
+  const [chapters, setChapters] = useState<Record<string, { number: string, title: string, content: string }[]>>({});
+  const [activeChapterTab, setActiveChapterTab] = useState<Record<number, number>>({});
+  const [chapterLoading, setChapterLoading] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     const fetchPlan = async () => {
@@ -101,8 +104,7 @@ export default function Redaction({ locale = 'fr' }: { locale?: Locale }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          partTitle: part.title,
-          partSummary: part.summary,
+          partNumber: extractPartNumber(part.title),
         }),
       });
       if (!res.ok) throw new Error('generation');
@@ -114,6 +116,38 @@ export default function Redaction({ locale = 'fr' }: { locale?: Locale }) {
       setGenerating(false);
     }
   };
+
+  // Utility to get chapter files for a part using the new API
+  async function fetchChaptersForPart(partNumber: string) {
+    const chapterList = [];
+    for (let i = 1; i <= 20; i++) {
+      try {
+        const res = await fetch(`/api/parts?partNumber=${partNumber}&chapterNumber=${i}`);
+        if (!res.ok) break;
+        const text = await res.text();
+        // Extract chapter headings (### ...)
+        const matches = [...text.matchAll(/^###\s+([IVXLCDM0-9\.]+)\s*:\s*(.+)$/gm)];
+        for (const match of matches) {
+          chapterList.push({ number: match[1], title: match[2], content: text });
+        }
+      } catch {
+        break;
+      }
+    }
+    return chapterList;
+  }
+
+  // Fetch chapters when part changes
+  useEffect(() => {
+    if (!parts[activeTab]) return;
+    const partNumber = extractPartNumber(parts[activeTab].title);
+    if (chapters[partNumber]) return;
+    setChapterLoading(prev => ({ ...prev, [partNumber]: true }));
+    fetchChaptersForPart(partNumber).then(list => {
+      setChapters(prev => ({ ...prev, [partNumber]: list }));
+      setActiveChapterTab(prev => ({ ...prev, [activeTab]: 0 }));
+    }).finally(() => setChapterLoading(prev => ({ ...prev, [partNumber]: false })));
+  }, [activeTab, parts]);
 
   return (
     <div className="p-4">
@@ -188,24 +222,54 @@ export default function Redaction({ locale = 'fr' }: { locale?: Locale }) {
                   </button>
                 )}
               </div>
-              <div className="mt-4">
-                {partDetailsLoading[activeTab] ? (
-                  <div className="text-gray-500">{t('redaction.loading', locale)}</div>
-                ) : (
-                  <SimpleMDEEditor
-                    key={activeTab + (partDetails[activeTab] || '')}
-                    value={partDetails[activeTab] || ''}
-                    options={{
-                      spellChecker: false,
-                      placeholder: t('redaction.placeholder', locale),
-                      status: false,
-                      autofocus: false,
-                      autosave: undefined,
-                    }}
-                    onChange={() => {}}
-                  />
-                )}
-              </div>
+              {chapters[extractPartNumber(parts[activeTab]?.title || '')]?.length > 0 && (
+                <div className="mt-4">
+                  <div className="flex gap-2 border-b mb-2">
+                    {chapters[extractPartNumber(parts[activeTab].title)].map((ch, idx) => (
+                      <button
+                        key={ch.number}
+                        className={`px-3 py-1 border-b-2 ${activeChapterTab[activeTab] === idx ? 'border-blue-600 text-blue-700' : 'border-transparent text-gray-600 hover:text-blue-600'}`}
+                        onClick={() => setActiveChapterTab(prev => ({ ...prev, [activeTab]: idx }))}
+                        type="button"
+                      >
+                        {ch.number} - {ch.title}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded shadow">
+                    <div className="mb-2 font-semibold">{chapters[extractPartNumber(parts[activeTab].title)][activeChapterTab[activeTab] || 0]?.title}</div>
+                    <pre className="whitespace-pre-wrap text-sm mb-2">{chapters[extractPartNumber(parts[activeTab].title)][activeChapterTab[activeTab] || 0]?.content}</pre>
+                    <button
+                      className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-sm"
+                      type="button"
+                      onClick={async () => {
+                        setRedacting(true);
+                        setRedactResult(null);
+                        try {
+                          const partNumber = extractPartNumber(parts[activeTab].title);
+                          const chapterNumber = chapters[partNumber][activeChapterTab[activeTab] || 0].number;
+                          const res = await fetch('/api/redact', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ partNumber, chapterNumberToRedact: chapterNumber }),
+                          });
+                          if (!res.ok) throw new Error('Redaction failed');
+                          const data = await res.json();
+                          setRedactResult(data);
+                        } catch (e) {
+                          setRedactResult({ error: e instanceof Error ? e.message : String(e) });
+                        } finally {
+                          setRedacting(false);
+                        }
+                      }}
+                      disabled={redacting}
+                    >
+                      {redacting ? <span className="animate-spin mr-2">⏳</span> : null}
+                      {t('redaction.write', locale)}
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
             <div className="border-l border-gray-200 p-4 bg-gray-50" style={{ width: 320, minHeight: 400 }}>
               <ChatSidebar locale={locale as 'en' | 'fr'} prompt={chatPrompt} setPrompt={setChatPrompt} />

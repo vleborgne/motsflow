@@ -106,6 +106,8 @@
     "error": "Error loading the plan.",
     "noParts": "No parts found in the plan.",
     "generatePartDetail": "Generate part detail",
-    "write": "Write"
+    "write": "Write",
+    "chapters": "Chapters",
+    "chapterLoading": "Loading chapters..."
   }
 } 

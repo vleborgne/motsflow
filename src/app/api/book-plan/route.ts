@@ -43,6 +43,16 @@ export async function GET(request: Request) {
   }
 }
 
+// Helper to build the planWriter prompt for both POST and PUT
+function buildPlanWriterPrompt({ currentPlan, currentConfig, prompt, description, writingStyle, bookType }: { currentPlan?: any, currentConfig: any, prompt?: string, description?: string, writingStyle?: string, bookType?: string }) {
+  const structureInstructions = `Règles de structure :\n- Le plan doit uniquement comporter la liste des parties du livre, chacune accompagnée d'un résumé détaillé (au moins 10 lignes) de ce qui s'y passe, des enjeux, des personnages impliqués et de l'évolution de l'intrigue dans cette partie et d'une liste de chapitres.\n- N'inclus pas les scènes, ils seront écrits plus tard.\n- Les parties doivent être des titres de niveau 1 (#) et numérotées (I, II, III, etc.) et les chapitres doivent être numérotés (I.1, I.2, II.1, III, etc.).\n- Les chapitres doivent suivre une structure narrative : situation initiale, élément perturbateur, résolution, situation de suspens pour la prochaine partie.\n- Il doit y avoir au moins 6 chapitres par partie.`;
+  if (currentPlan && Object.keys(currentPlan).length > 0) {
+    return `Voici le plan général actuel du livre :\n${typeof currentPlan === 'string' ? currentPlan : JSON.stringify(currentPlan, null, 2)}\n\nVoici la configuration actuelle :\n${JSON.stringify(currentConfig, null, 2)}\n\nDemande de l'utilisateur :\n${prompt || ''}\n\n${structureInstructions}\n\nTa tâche :\n1. Garde la structure générale du plan (parties)\n2. Modifie uniquement les éléments demandés par l'utilisateur\n3. Assure la cohérence narrative entre les différentes parties\n4. Préserve les personnages existants et leurs arcs narratifs\n5. Respecte le style d'écriture et le type de livre\n6. Préserve les numéros de parties existants.`;
+  } else {
+    return `Aucun plan initial n'existe. Génère un plan général de livre à partir des informations suivantes :\nDescription : ${description}\nStyle d'écriture : ${writingStyle}\nType de livre : ${bookType}\nConfiguration :\n${JSON.stringify(currentConfig, null, 2)}\n\nDemande de l'utilisateur :\n${prompt || ''}\n\n${structureInstructions}\n\nTa tâche :\n1. Crée la structure complète du plan général (parties)\n2. Assure la cohérence narrative\n3. Propose des personnages et leurs arcs narratifs\n4. Respecte le style d'écriture et le type de livre.`;
+  }
+}
+
 export async function POST(request: Request) {
   const requestId = Math.random().toString(36).substring(7);
   console.log(`[${requestId}] Starting plan generation request`);
@@ -51,7 +61,6 @@ export async function POST(request: Request) {
     const body = await request.json();
     console.log(`[${requestId}] Request body:`, JSON.stringify(body, null, 2));
     const { description, writingStyle, bookType, prompt } = body;
-    
     // Load the current plan and configuration
     const currentPlan = getBookPlan();
     const hasInitialPlan = currentPlan && Object.keys(currentPlan).length > 0;
@@ -70,16 +79,17 @@ export async function POST(request: Request) {
       );
     }
 
-    // Structure instructions for the general plan
-    const structureInstructions = `Règles de structure :\n- Le plan doit uniquement comporter la liste des parties du livre, chacune accompagnée d'un résumé détaillé (au moins 10 lignes) de ce qui s'y passe, des enjeux, des personnages impliqués et de l'évolution de l'intrigue dans cette partie.\n- N'inclus pas les chapitres ni les scènes, ils seront écrits plus tard.\n- Les parties doivent être des titres de niveau 1 (#) et numérotées (I, II, III, etc.).`;
-
-    // Génération du plan général par le planWriterAgent
-    const planWriterPrompt = hasInitialPlan
-      ? `Voici le plan général actuel du livre :\n${JSON.stringify(currentPlan, null, 2)}\n\nVoici la configuration actuelle :\n${JSON.stringify(currentConfig, null, 2)}\n\nDemande de l'utilisateur :\n${prompt}\n\n${structureInstructions}\n\nTa tâche :\n1. Garde la structure générale du plan (parties)\n2. Modifie uniquement les éléments demandés par l'utilisateur\n3. Assure la cohérence narrative entre les différentes parties\n4. Préserve les personnages existants et leurs arcs narratifs\n5. Respecte le style d'écriture et le type de livre\n6. Préserve les numéros de parties existants.`
-      : `Aucun plan initial n'existe. Génère un plan général de livre à partir des informations suivantes :\nDescription : ${description}\nStyle d'écriture : ${writingStyle}\nType de livre : ${bookType}\nConfiguration :\n${JSON.stringify(currentConfig, null, 2)}\n\nDemande de l'utilisateur :\n${prompt}\n\n${structureInstructions}\n\nTa tâche :\n1. Crée la structure complète du plan général (parties)\n2. Assure la cohérence narrative\n3. Propose des personnages et leurs arcs narratifs\n4. Respecte le style d'écriture et le type de livre.`;
-
+    // Use the helper to build the prompt
+    const planWriterPrompt = buildPlanWriterPrompt({
+      currentPlan,
+      currentConfig,
+      prompt,
+      description,
+      writingStyle,
+      bookType
+    });
     console.log(`[${requestId}] planWriterPrompt:`, planWriterPrompt);
-    const generalPlan = await planWriterAgent.submitQuery([planWriterPrompt]);
+    const generalPlan = await planWriterAgent.submitQuery([planWriterPrompt]) as string;
     console.log(`[${requestId}] generalPlan generated`);
 
     // Save the general plan
@@ -119,12 +129,17 @@ export async function PUT(request: Request) {
           { status: 404 }
         );
       }
-      // Compose the prompt for the agent
-      const agentPrompt = [
-        `Voici le plan général actuel :\n${typeof currentPlan === 'string' ? currentPlan : JSON.stringify(currentPlan, null, 2)}\n\nVoici la demande de modification de l'utilisateur :\n${updates.modificationPrompt}\n\nMerci de modifier le plan général pour qu'il corresponde à la demande, sans ajouter de chapitres ni de scènes.`
-      ];
-      console.log(`[${requestId}] Agent prompt:`, agentPrompt[0]);
-      const modifiedPlan = await planWriterAgent.submitQuery(agentPrompt);
+      // Use the helper to build the prompt
+      const configPath = path.join(process.cwd(), 'data', 'book-config.json');
+      const configContent = fs.readFileSync(configPath, 'utf-8');
+      const currentConfig = JSON.parse(configContent);
+      const planWriterPrompt = buildPlanWriterPrompt({
+        currentPlan,
+        currentConfig,
+        prompt: updates.modificationPrompt
+      });
+      console.log(`[${requestId}] planWriterPrompt:`, planWriterPrompt);
+      const modifiedPlan = await planWriterAgent.submitQuery([planWriterPrompt]) as string;
       console.log(`[${requestId}] Modified plan:`, modifiedPlan);
       // Save and return
       const filePath = path.join(process.cwd(), 'data', 'book-plan.md');
@@ -132,8 +147,6 @@ export async function PUT(request: Request) {
       console.log(`[${requestId}] Modified plan saved to book-plan.md`);
       return NextResponse.json({ plan: modifiedPlan });
     }
-
-    // No more structure checks, always handle as Markdown
     console.warn(`[${requestId}] Invalid request: missing modificationPrompt`);
     return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
   } catch (error) {

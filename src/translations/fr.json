@@ -117,6 +117,8 @@
     "error": "Erreur lors du chargement du plan.",
     "noParts": "Aucune partie trouvée dans le plan.",
     "generatePartDetail": "Générer le détail de la partie",
-    "write": "Rédiger"
+    "write": "Rédiger",
+    "chapters": "Chapitres",
+    "chapterLoading": "Chargement des chapitres..."
   }
 } 
