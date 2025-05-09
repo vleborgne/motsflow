@@ -95,7 +95,7 @@ export default function BookPlanDisplay({ locale }: BookPlanDisplayProps) {
     content,
   });
 
-  useEffect(() => {
+  const reloadPlan = useCallback(() => {
     setLoading(true);
     setError(null);
     fetch(`/api/book-plan?format=md`)
@@ -110,6 +110,10 @@ export default function BookPlanDisplay({ locale }: BookPlanDisplayProps) {
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, [locale]);
+
+  useEffect(() => {
+    reloadPlan();
+  }, [locale, reloadPlan]);
 
   const handleSave = React.useCallback(async (val: string) => {
     setSaveStatus('saving');
@@ -172,7 +176,7 @@ export default function BookPlanDisplay({ locale }: BookPlanDisplayProps) {
         className="border-l border-gray-200 p-4 bg-gray-50"
         sx={{ width: { xs: '100%', md: 320 }, minHeight: 400 }}
       >
-        <ChatSidebar locale={locale} prompt={chatPrompt} setPrompt={setChatPrompt} />
+        <ChatSidebar locale={locale} prompt={chatPrompt} setPrompt={setChatPrompt} onPlanUpdated={reloadPlan} />
       </Box>
     </Box>
   );

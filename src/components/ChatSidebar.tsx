@@ -5,9 +5,10 @@ interface ChatSidebarProps {
   locale: 'en' | 'fr';
   prompt: string;
   setPrompt: (v: string) => void;
+  onPlanUpdated?: () => void;
 }
 
-export default function ChatSidebar({ locale, prompt, setPrompt }: ChatSidebarProps) {
+export default function ChatSidebar({ locale, prompt, setPrompt, onPlanUpdated }: ChatSidebarProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -30,6 +31,7 @@ export default function ChatSidebar({ locale, prompt, setPrompt }: ChatSidebarPr
       }
       setSuccess(t('bookPlanDisplay.modifyingPlan', locale));
       setPrompt('');
+      if (onPlanUpdated) onPlanUpdated();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : t('bookPlanDisplay.error', locale));
     } finally {

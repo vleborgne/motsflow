@@ -1,6 +1,6 @@
 import { t } from '@/lib/i18n';
 import type { Locale } from '@/lib/i18n';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import ChatSidebar from './ChatSidebar';
 
@@ -47,6 +47,18 @@ function extractFirstChapterNumber(partDetail: string): string | null {
   return null;
 }
 
+// Helper to extract chapters from a part summary
+function extractChaptersFromSummary(summary: string) {
+  // Matches lines like: - **I.1 : La routine de Laila**  
+  const chapterRegex = /^- \*\*([IVXLCDM0-9]+\.[0-9]+) : ([^*]+)\*\*/gm;
+  const chapters: { number: string; title: string }[] = [];
+  let match;
+  while ((match = chapterRegex.exec(summary)) !== null) {
+    chapters.push({ number: match[1], title: match[2].trim() });
+  }
+  return chapters;
+}
+
 export default function Redaction({ locale = 'fr' }: { locale?: Locale }) {
   const [parts, setParts] = useState<Part[]>([]);
   const [loading, setLoading] = useState(true);
@@ -61,6 +73,13 @@ export default function Redaction({ locale = 'fr' }: { locale?: Locale }) {
   const [chapters, setChapters] = useState<Record<string, { number: string, title: string, content: string }[]>>({});
   const [activeChapterTab, setActiveChapterTab] = useState<Record<number, number>>({});
   const [chapterLoading, setChapterLoading] = useState<Record<string, boolean>>({});
+  const [chapterMeta, setChapterMeta] = useState<Record<string, { title: string; description: string; scenesFile: string }[]>>({});
+  const [activeChapterIdx, setActiveChapterIdx] = useState<Record<number, number>>({});
+  const [activeSummaryChapterTab, setActiveSummaryChapterTab] = useState<Record<number, number>>({});
+  const [editorContent, setEditorContent] = useState<Record<string, string>>({});
+  const [saveLoading, setSaveLoading] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const editorInstanceRef = useRef<any>(null); // Holds the SimpleMDE instance
 
   useEffect(() => {
     const fetchPlan = async () => {
@@ -122,7 +141,7 @@ export default function Redaction({ locale = 'fr' }: { locale?: Locale }) {
     const chapterList = [];
     for (let i = 1; i <= 20; i++) {
       try {
-        const res = await fetch(`/api/parts?partNumber=${partNumber}&chapterNumber=${i}`);
+        const res = await fetch(`/api/scenes?partNumber=${partNumber}&chapterNumber=${i}`);
         if (!res.ok) break;
         const text = await res.text();
         // Extract chapter headings (### ...)
@@ -148,6 +167,76 @@ export default function Redaction({ locale = 'fr' }: { locale?: Locale }) {
       setActiveChapterTab(prev => ({ ...prev, [activeTab]: 0 }));
     }).finally(() => setChapterLoading(prev => ({ ...prev, [partNumber]: false })));
   }, [activeTab, parts]);
+
+  // Reset active chapter tab to 0 when changing part
+  useEffect(() => {
+    setActiveChapterTab(prev => ({ ...prev, [activeTab]: 0 }));
+  }, [activeTab]);
+
+  // Fetch chapter content when chapter changes
+  useEffect(() => {
+    if (!parts[activeTab]) return;
+    const partNumber = extractPartNumber(parts[activeTab].title);
+    const idx = activeChapterIdx[activeTab] || 0;
+    const meta = chapterMeta[partNumber];
+    if (!meta || !meta[idx]) return;
+    const scenesFile = meta[idx].scenesFile;
+    if (chapters[partNumber] && chapters[partNumber][idx] && chapters[partNumber][idx].content) return;
+    setChapterLoading(prev => ({ ...prev, [partNumber]: true }));
+    fetch(`/data/parts/${scenesFile}`)
+      .then(async res => {
+        if (!res.ok) return '';
+        return await res.text();
+      })
+      .then(text => {
+        setChapters(prev => {
+          const arr = prev[partNumber] ? [...prev[partNumber]] : [];
+          arr[idx] = { ...(arr[idx] || {}), content: text };
+          return { ...prev, [partNumber]: arr };
+        });
+      })
+      .finally(() => setChapterLoading(prev => ({ ...prev, [partNumber]: false })));
+  }, [activeTab, activeChapterIdx, chapterMeta, parts]);
+
+  // Update editor content when chapter changes
+  useEffect(() => {
+    const partNumber = extractPartNumber(parts[activeTab]?.title || '');
+    const chaptersList = chapters[partNumber] || [];
+    const activeIdx = activeSummaryChapterTab[activeTab] ?? 0;
+    const chapterKey = `${partNumber}_${chaptersList[activeIdx]?.number}`;
+    // Use a timeout to ensure the editor is mounted before setting the value
+    setTimeout(() => {
+      if (editorInstanceRef.current) {
+        editorInstanceRef.current.value(editorContent[chapterKey] ?? chaptersList[activeIdx]?.content ?? '');
+      }
+    }, 1000);
+  }, [activeTab, activeSummaryChapterTab, chapters, parts, editorContent]);
+
+  // Save handler (get value from editor instance)
+  const handleSave = async () => {
+    setSaveLoading(true);
+    setSaveStatus('idle');
+    try {
+      const partNumber = extractPartNumber(parts[activeTab].title);
+      const chaptersList = chapters[partNumber] || [];
+      const activeIdx = activeSummaryChapterTab[activeTab] ?? 0;
+      const chapterNumber = chaptersList[activeIdx]?.number;
+      const chapterKey = `${partNumber}_${chapterNumber}`;
+      const content = editorInstanceRef.current ? editorInstanceRef.current.value() : '';
+      const res = await fetch('/api/scenes', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ partNumber, chapterNumber, content }),
+      });
+      if (!res.ok) throw new Error('save');
+      setEditorContent(prev => ({ ...prev, [chapterKey]: content }));
+      setSaveStatus('success');
+    } catch (e) {
+      setSaveStatus('error');
+    } finally {
+      setSaveLoading(false);
+    }
+  };
 
   return (
     <div className="p-4">
@@ -178,6 +267,69 @@ export default function Redaction({ locale = 'fr' }: { locale?: Locale }) {
             <div className="flex-1 p-4" style={{ minWidth: 0 }}>
               <h4 className="text-lg font-semibold mb-2">{parts[activeTab].title}</h4>
               <p className="whitespace-pre-line text-gray-700 mb-4">{parts[activeTab].summary}</p>
+              {/* Display chapters as tabs below summary */}
+              {(() => {
+                // Get the list of chapters from the part summary
+                const chapterTabs = extractChaptersFromSummary(parts[activeTab].summary);
+                const activeIdx = activeSummaryChapterTab[activeTab] ?? 0;
+                const partNumber = extractPartNumber(parts[activeTab].title);
+                const chapterNumber = chapterTabs[activeIdx]?.number;
+                // Compute the chapter file path (main chapter file)
+                const chapterKey = `${partNumber}_${chapterNumber}`;
+                // Load the content for the selected chapter
+                const chapterContent = editorContent[chapterKey] ?? '';
+                return (
+                  <div className="mb-4">
+                    <div className="flex gap-2 border-b mb-2">
+                      {chapterTabs.map((ch, idx) => (
+                        <button
+                          key={ch.number}
+                          className={`px-3 py-1 border-b-2 ${activeIdx === idx ? 'border-blue-600 text-blue-700' : 'border-transparent text-gray-600 hover:text-blue-600'}`}
+                          onClick={() => setActiveSummaryChapterTab(prev => ({ ...prev, [activeTab]: idx }))}
+                          type="button"
+                        >
+                          {ch.number}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="bg-gray-50 p-4 rounded shadow text-center">
+                      <div className="text-xs text-gray-500 mb-1">{chapterTabs[activeIdx]?.number}</div>
+                      <div className="mb-2 font-bold text-lg">{chapterTabs[activeIdx]?.title}</div>
+                      {/* Markdown editor and chat side by side */}
+                      <div className="flex flex-col md:flex-row gap-4">
+                        <div className="flex-1 text-left">
+                          <SimpleMDEEditor
+                            key={chapterKey}
+                            getMdeInstance={instance => { editorInstanceRef.current = instance; }}
+                            options={{
+                              spellChecker: false,
+                              status: false,
+                              toolbar: true,
+                            }}
+                          />
+                          <button
+                            className="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-sm"
+                            type="button"
+                            onClick={handleSave}
+                            disabled={saveLoading}
+                          >
+                            {saveLoading ? t('redaction.saving', locale) : t('redaction.save', locale)}
+                          </button>
+                          {saveStatus === 'success' && (
+                            <div className="text-green-600 mt-2">{t('redaction.saveSuccess', locale)}</div>
+                          )}
+                          {saveStatus === 'error' && (
+                            <div className="text-red-600 mt-2">{t('redaction.saveError', locale)}</div>
+                          )}
+                        </div>
+                        <div className="w-full md:w-80 border-t md:border-t-0 md:border-l border-gray-200 bg-gray-50 p-4">
+                          <ChatSidebar locale={locale as 'en' | 'fr'} prompt={chatPrompt} setPrompt={setChatPrompt} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
               <div className="flex flex-row gap-2 mb-4">
                 <button
                   className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors text-sm"
@@ -222,23 +374,23 @@ export default function Redaction({ locale = 'fr' }: { locale?: Locale }) {
                   </button>
                 )}
               </div>
-              {chapters[extractPartNumber(parts[activeTab]?.title || '')]?.length > 0 && (
+              {chapterMeta[extractPartNumber(parts[activeTab]?.title || '')]?.length > 0 && (
                 <div className="mt-4">
                   <div className="flex gap-2 border-b mb-2">
-                    {chapters[extractPartNumber(parts[activeTab].title)].map((ch, idx) => (
+                    {chapterMeta[extractPartNumber(parts[activeTab].title)].map((ch, idx) => (
                       <button
-                        key={ch.number}
-                        className={`px-3 py-1 border-b-2 ${activeChapterTab[activeTab] === idx ? 'border-blue-600 text-blue-700' : 'border-transparent text-gray-600 hover:text-blue-600'}`}
-                        onClick={() => setActiveChapterTab(prev => ({ ...prev, [activeTab]: idx }))}
+                        key={ch.title}
+                        className={`px-3 py-1 border-b-2 ${activeChapterIdx[activeTab] === idx ? 'border-blue-600 text-blue-700' : 'border-transparent text-gray-600 hover:text-blue-600'}`}
+                        onClick={() => setActiveChapterIdx(prev => ({ ...prev, [activeTab]: idx }))}
                         type="button"
                       >
-                        {ch.number} - {ch.title}
+                        {ch.title}
                       </button>
                     ))}
                   </div>
                   <div className="bg-gray-50 p-4 rounded shadow">
-                    <div className="mb-2 font-semibold">{chapters[extractPartNumber(parts[activeTab].title)][activeChapterTab[activeTab] || 0]?.title}</div>
-                    <pre className="whitespace-pre-wrap text-sm mb-2">{chapters[extractPartNumber(parts[activeTab].title)][activeChapterTab[activeTab] || 0]?.content}</pre>
+                    <div className="mb-2 font-semibold">{chapterMeta[extractPartNumber(parts[activeTab].title)][activeChapterIdx[activeTab] || 0]?.title}</div>
+                    <pre className="whitespace-pre-wrap text-sm mb-2">{chapters[extractPartNumber(parts[activeTab].title)]?.[activeChapterIdx[activeTab] || 0]?.content}</pre>
                     <button
                       className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-sm"
                       type="button"
@@ -247,7 +399,8 @@ export default function Redaction({ locale = 'fr' }: { locale?: Locale }) {
                         setRedactResult(null);
                         try {
                           const partNumber = extractPartNumber(parts[activeTab].title);
-                          const chapterNumber = chapters[partNumber][activeChapterTab[activeTab] || 0].number;
+                          const idx = activeChapterIdx[activeTab] || 0;
+                          const chapterNumber = chapterMeta[partNumber][idx].title;
                           const res = await fetch('/api/redact', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -267,12 +420,12 @@ export default function Redaction({ locale = 'fr' }: { locale?: Locale }) {
                       {redacting ? <span className="animate-spin mr-2">⏳</span> : null}
                       {t('redaction.write', locale)}
                     </button>
+                    <div className="mt-4">
+                      <ChatSidebar locale={locale as 'en' | 'fr'} prompt={chatPrompt} setPrompt={setChatPrompt} />
+                    </div>
                   </div>
                 </div>
               )}
-            </div>
-            <div className="border-l border-gray-200 p-4 bg-gray-50" style={{ width: 320, minHeight: 400 }}>
-              <ChatSidebar locale={locale as 'en' | 'fr'} prompt={chatPrompt} setPrompt={setChatPrompt} />
             </div>
           </div>
         </>

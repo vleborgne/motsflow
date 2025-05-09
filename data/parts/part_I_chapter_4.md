@@ -1,19 +1,23 @@
-### I.4.1 : Le silence du petit déjeuner
+### I.4.1 : Matinée silencieuse
 
-Laila s'assoit à la table du petit déjeuner, entourée de sa famille, mais le silence est pesant. Ses parents sont absorbés par leurs téléphones, et son frère est plongé dans un jeu vidéo portable. Elle tente d'engager la conversation, mais ses mots se perdent dans le vide numérique qui les entoure.
+Laila se réveille dans une maison silencieuse, ses parents déjà partis pour le travail. Elle se prépare pour l'école dans une solitude pesante, le bruit de la cafetière étant son seul compagnon. Elle se demande quand elle a eu sa dernière vraie conversation avec sa famille.
 
-### I.4.2 : Le refuge de la chambre
+### I.4.2 : Évasion numérique
 
-De retour dans sa chambre, Laila se laisse tomber sur son lit, son ordinateur portable ouvert devant elle. Elle se connecte à son réseau social préféré, cherchant une connexion humaine à travers l'écran. Les notifications et les messages instantanés deviennent sa nouvelle famille, comblant le vide laissé par l'absence de communication réelle.
+En classe, Laila se réfugie dans son monde numérique, ses écouteurs vissés sur les oreilles. Elle parcourt les forums de programmation, cherchant des réponses à ses questions existentielles dans le code. La technologie devient son échappatoire, un monde où elle se sent en contrôle.
 
-### I.4.3 : La bulle numérique
+### I.4.3 : Pause déjeuner solitaire
 
-Laila plonge dans un monde virtuel, où elle explore des forums et des communautés en ligne. Elle y trouve des discussions passionnantes sur la technologie et l'écologie, des sujets qui la fascinent. Dans cet espace numérique, elle se sent comprise et acceptée, bien plus que dans sa propre maison.
+Pendant la pause déjeuner, Laila s'installe seule à une table, son ordinateur portable ouvert devant elle. Elle observe ses camarades discuter et rire ensemble, ressentant un pincement de jalousie. Elle plonge dans un projet de codage, espérant oublier sa solitude.
 
-### I.4.4 : Une conversation manquée
+### I.4.4 : Retour à la maison
 
-En fin de journée, Laila entend ses parents discuter dans le salon. Elle hésite à les rejoindre, mais la peur d'une conversation superficielle la retient. Elle reste dans l'ombre du couloir, écoutant à distance, avant de retourner dans sa chambre, renforçant encore sa dépendance à la technologie.
+De retour chez elle, Laila trouve la maison vide. Elle s'installe dans le salon, allume la télévision pour combler le silence, mais l'écran ne parvient pas à masquer le vide qu'elle ressent. Elle se connecte à un chat en ligne, cherchant du réconfort auprès d'inconnus.
 
-### I.4.5 : Le reflet dans l'écran
+### I.4.5 : Un appel manqué
 
-Alors que la nuit tombe, Laila contemple son reflet dans l'écran noir de son ordinateur. Elle réalise que sa vie est devenue une série de pixels et de connexions virtuelles. Un sentiment de solitude l'envahit, mais elle ne sait pas comment briser le cycle et retrouver un lien authentique avec sa famille.
+En fin de soirée, Laila remarque un appel manqué de sa mère sur son téléphone. Elle hésite à rappeler, se sentant coupable de ne pas avoir remarqué plus tôt. Elle décide finalement de lui envoyer un message, espérant que cela suffira pour combler la distance qui les sépare.
+
+### I.4.6 : Plongée dans le virtuel
+
+La nuit tombée, Laila s'enfonce dans le monde virtuel, explorant de nouveaux logiciels et jeux. Elle ressent une étrange satisfaction à maîtriser cet univers, mais une partie d'elle sait qu'elle ne fait que fuir la réalité. Elle se promet de trouver un moyen de reconnecter avec sa famille, un jour.

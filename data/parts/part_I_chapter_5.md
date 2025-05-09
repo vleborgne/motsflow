@@ -1,19 +1,14 @@
-### I.5.1 : Une rencontre inattendue
+### I.5.1 : Rencontre au club informatique
+Laila arrive au club informatique, où Jean-Claude l'attend déjà, entouré de câbles et d'écrans. L'atmosphère est chargée d'électricité et d'anticipation. Ils échangent des idées, l'excitation palpable alors qu'ils discutent de la manière dont la technologie peut servir l'écologie.
 
-Laila et Jean-Claude se croisent par hasard dans la salle commune du club informatique. Laila, absorbée par ses pensées, est surprise de voir Jean-Claude déjà installé avec son ordinateur portable. Ils échangent un sourire complice, reconnaissant leur passion commune pour la technologie et l'écologie.
+### I.5.2 : L'éclosion d'une idée
+Assis face à face, Laila et Jean-Claude commencent à esquisser les grandes lignes de leur projet. Ils imaginent un programme capable de surveiller et réduire la consommation énergétique des appareils électroniques. Leurs esprits s'illuminent à mesure que les idées fusent, chacun apportant sa touche personnelle.
 
-### I.5.2 : L'étincelle de l'idée
+### I.5.3 : Les défis techniques
+Laila et Jean-Claude plongent dans les détails techniques, confrontant les obstacles qui se dressent devant eux. Ils discutent des langages de programmation, des algorithmes et des défis de sécurité, tout en partageant des rires et des anecdotes sur leurs expériences passées.
 
-Assis côte à côte, Laila et Jean-Claude discutent de leurs préoccupations écologiques. Jean-Claude partage une idée audacieuse : utiliser leurs compétences en informatique pour créer un projet de hack écologique. Laila, enthousiasmée, propose de développer une application qui sensibiliserait les utilisateurs à leur empreinte carbone.
+### I.5.4 : Une vision partagée
+La discussion s'élargit pour inclure les implications éthiques et sociales de leur projet. Jean-Claude parle avec passion de l'impact potentiel sur la réduction de l'empreinte carbone, tandis que Laila réfléchit à la manière de sensibiliser le public à leur cause. Leur vision commune se renforce, cimentant leur partenariat.
 
-### I.5.3 : Brainstorming créatif
-
-Les deux amis se plongent dans un brainstorming intense, griffonnant des idées sur un tableau blanc. Ils imaginent des fonctionnalités innovantes pour leur application, comme un calculateur de CO2 en temps réel et des conseils personnalisés pour réduire son impact environnemental. L'énergie dans la pièce est palpable, chaque idée nourrissant la suivante.
-
-### I.5.4 : Les premiers obstacles
-
-Alors qu'ils commencent à esquisser le plan technique, Laila et Jean-Claude se heurtent à des défis inattendus. Les limitations techniques et le manque de ressources menacent de freiner leur enthousiasme. Cependant, leur détermination ne faiblit pas, et ils décident de chercher des solutions ensemble.
-
-### I.5.5 : Une alliance renforcée
-
-Face aux difficultés, Laila et Jean-Claude réalisent que leur collaboration est essentielle. Ils se promettent de se soutenir mutuellement et de faire de leur projet un succès. Ce moment scelle leur amitié et leur engagement envers leur cause commune, les motivant à surmonter les obstacles avec créativité et persévérance.
+### I.5.5 : La promesse d'un avenir
+Alors que la nuit tombe, Laila et Jean-Claude se promettent de faire de leur projet une réalité. Ils quittent le club informatique avec la détermination de changer le monde, un octet à la fois. Laila ressent un regain d'énergie et d'espoir, convaincue que ce projet pourrait être le début de quelque chose de grand.

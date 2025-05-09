@@ -4,11 +4,6 @@ import { getBookPlan } from '@/lib/fileStorage';
 import fs from 'fs';
 import path from 'path';
 
-function extractPartNumber(partTitle: string): string {
-  // Extracts the Roman numeral or number before the first dot (e.g., 'I' from 'I. Setup')
-  const match = partTitle.match(/^([IVXLCDM0-9]+)\s*\./i);
-  return match ? match[1] : partTitle.replace(/\W+/g, '_');
-}
 
 export async function GET(request: Request) {
   const url = new URL(request.url);

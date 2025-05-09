@@ -108,6 +108,10 @@
     "generatePartDetail": "Generate part detail",
     "write": "Write",
     "chapters": "Chapters",
-    "chapterLoading": "Loading chapters..."
+    "chapterLoading": "Loading chapters...",
+    "save": "Save",
+    "saving": "Saving...",
+    "saveSuccess": "Chapter saved!",
+    "saveError": "Error while saving."
   }
 } 
